@@ -37,6 +37,19 @@ def validar_resultado(resultado):
         print(f"  [X] ERROR DE CONTRATO en modulo '{resultado.get('modulo', 'Desconocido')}':")
         print(f"      Detalle: {str(e)}")
 
+def ejecutar_modulo(func, *args, **kwargs):
+    """
+    Ejecuta una funcion de modulo de forma segura y valida su resultado.
+    """
+    try:
+        resultado = func(*args, **kwargs)
+        if resultado:
+            validar_resultado(resultado)
+    except NotImplementedError as e:
+        print(f"\n[!] Característica en desarrollo: {e}")
+    except Exception as e:
+        print(f"\n[!] Error inesperado en {func.__name__}: {e}")
+
 def main():
     parser = argparse.ArgumentParser(
         description="Suite de Auditoria de Seguridad Informatica - Python",
@@ -66,34 +79,28 @@ def main():
 
     print(f"[*] Iniciando auditoria para: {args.target}")
 
+    # Ejecución modular con manejo de errores individual
     try:
-        # Logica para DNS (Semana 1)
-        try:
-            if args.dns_all:
-                validar_resultado(dns_recon.get_a_records(args.target))
-                validar_resultado(dns_recon.get_mx_ns_records(args.target))
-                validar_resultado(dns_recon.get_txt_soa_records(args.target))
+        if args.dns_all or args.dns_a:
+            ejecutar_modulo(dns_recon.get_a_records, args.target)
+        
+        if args.dns_all or args.dns_mxns:
+            ejecutar_modulo(dns_recon.get_mx_ns_records, args.target)
             
-            if args.dns_a:
-                validar_resultado(dns_recon.get_a_records(args.target))
-                
-            if args.dns_mxns:
-                validar_resultado(dns_recon.get_mx_ns_records(args.target))
-                
-            if args.dns_txtsoa:
-                validar_resultado(dns_recon.get_txt_soa_records(args.target))
+        if args.dns_all or args.dns_txtsoa:
+            ejecutar_modulo(dns_recon.get_txt_soa_records, args.target)
 
-            if args.whois:
-                validar_resultado(osint.get_whois_data(args.target))
+        if args.whois:
+            ejecutar_modulo(osint.get_whois_data, args.target)
 
-            if args.ping_sweep:
-                validar_resultado(discovery.ping_sweep(args.target))
+        if args.ping_sweep:
+            ejecutar_modulo(discovery.ping_sweep, args.target)
 
-            if args.scan:
-                validar_resultado(scanning.scan_ports_dispatcher(args.target, args.scan))
+        if args.scan:
+            ejecutar_modulo(scanning.scan_ports_dispatcher, args.target, args.scan)
 
-        except (NotImplementedError, AttributeError) as e:
-            print(f"\n[!] Característica no disponible: {e}")
+    except AttributeError as e:
+        print(f"\n[!] Error en la estructura de los módulos: {e}")
 
     except KeyboardInterrupt:
         print("\n[!] Auditoria interrumpida por el usuario.")

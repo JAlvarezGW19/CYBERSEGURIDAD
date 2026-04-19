@@ -1,0 +1,16 @@
+# Excluir carpeta de calificaciones (Privado)
+calificaciones/
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+.venv/
+env/
+
+# LaTeX (Archivos auxiliares de compilación)
+*.aux
+*.log
+*.out
+*.toc
+*.synctex.gz

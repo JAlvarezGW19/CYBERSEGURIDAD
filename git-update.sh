@@ -12,15 +12,24 @@ if [ ! -f "./update_repo.sh" ]; then
 fi
 chmod +x ./update_repo.sh
 
+# Verificar que estamos dentro de un repositorio Git
+if ! git rev-parse --is-inside-work-tree >/dev/null 2>&1; then
+  echo "Error: $SCRIPT_DIR no es un repositorio Git válido."
+  exit 1
+fi
+
 # Detect current branch (defaults to main if detection fails)
 CURRENT_BRANCH=$(git symbolic-ref --quiet --short HEAD || echo "main")
+# Permitir un mensaje de commit personalizado como primer argumento
+COMMIT_MSG="${1:-WIP: guardar cambios antes de pull}"
 
 echo "Starting update for branch: $CURRENT_BRANCH"
 
 # Commit local changes before pulling (WIP)
 git add -A
 if ! git diff --staged --quiet; then
-  git commit -m "WIP: guardar cambios antes de pull" || true
+  echo "Realizando commit: $COMMIT_MSG"
+  git commit -m "$COMMIT_MSG" || true
 else
   echo "No local changes to commit (pre-check)."
 fi
