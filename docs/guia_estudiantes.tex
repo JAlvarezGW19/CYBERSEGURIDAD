@@ -1,0 +1,59 @@
+\documentclass{article}
+\usepackage[utf8]{inputenc}
+\usepackage[spanish]{babel}
+\usepackage{listings}
+\usepackage{xcolor}
+
+\title{Guía de Desarrollo y Entrega de Módulos - Curso Seguridad Informática}
+\author{Coordinación del Proyecto}
+\date{\today}
+
+\begin{document}
+
+\maketitle
+
+Esta guía establece los 5 puntos obligatorios para que todos los estudiantes (Grupos 1-4) entreguen sus funciones de auditoría de forma consistente.
+
+\section*{1. Estándar de Docstrings (Estilo Google)}
+Cada función debe incluir un comentario inicial que explique su propósito, parámetros y valor de retorno. Esto es vital para el mantenimiento del código.
+\begin{lstlisting}[language=Python]
+def funcion_ejemplo(ip_objetivo: str):
+    """
+    Realiza una accion especifica de auditoria.
+    Args:
+        ip_objetivo (str): La direccion IP a analizar.
+    Returns:
+        dict: Resultados obtenidos.
+    """
+\end{lstlisting}
+
+\section*{2. Tipado de Datos (Type Hinting)}
+Es obligatorio usar \textit{Type Hints} en Python para evitar errores de tipo. Ejemplo: \texttt{def mi\_funcion(param: str) -> dict:}.
+
+\section*{3. Formato de Salida Estandarizado}
+Para facilitar el módulo de reportes de la Semana 10, toda función \textbf{debe retornar un diccionario} (no solo imprimir en consola).
+Este debe cumplir con el esquema definido en \texttt{docs/schema\_resultados.json}.
+\begin{lstlisting}[language=Python]
+return {
+    "modulo": "DNS",
+    "grupo": 1,
+    "estudiante": "E1",
+    "target": "google.com",
+    "timestamp": "2023-10-27T10:00:00Z",
+    "status": "success",
+    "data": {"registros_a": ["1.1.1.1"]},
+    "error_message": null
+}
+\end{lstlisting}
+
+\section*{4. Manejo de Excepciones y Errores}
+Las funciones no deben detener la ejecución del programa principal. Deben usar bloques \texttt{try-except} para capturar errores de red o permisos y devolver un mensaje de error dentro del diccionario de resultados.
+
+\section*{5. Flujo de Trabajo en Git}
+\begin{itemize}
+    \item Prohibido modificar \texttt{auditoria.py} directamente.
+    \item Trabajar exclusivamente en el archivo asignado a su grupo (ej. \texttt{modulos/scanning.py}).
+    \item Antes de entregar, asegúrese de eliminar el \texttt{raise NotImplementedError} de su función.
+\end{itemize}
+
+\end{document}

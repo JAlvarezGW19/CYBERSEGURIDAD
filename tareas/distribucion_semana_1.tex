@@ -1,0 +1,74 @@
+\documentclass[12pt,a4paper]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[spanish]{babel}
+\usepackage{geometry}
+\usepackage{enumitem}
+\usepackage{titlesec}
+\usepackage{xcolor}
+
+\geometry{a4paper, margin=1in}
+
+\titleformat{\section}{\normalfont\Large\bfseries\color{blue}}{}{0pt}{}
+\titleformat{\subsection}{\normalfont\large\bfseries\color{darkgray}}{}{0pt}{}
+
+\title{Distribución de Tareas - Semana 1 \\ \large Curso: Seguridad Informática}
+\author{Prof. César Rodríguez}
+\date{\today}
+
+\begin{document}
+
+\maketitle
+
+\section{Introducción}
+Para el inicio del proyecto, los 13 estudiantes se dividirán en 4 grupos de trabajo. Cada estudiante es responsable de implementar una funcionalidad específica en el archivo de su grupo dentro del paquete \texttt{modulos/}.
+
+\section{Grupo 1: Reconocimiento DNS (3 Estudiantes)}
+\textbf{Archivo:} \texttt{modulos/dns\_recon.py}
+
+\begin{itemize}[label=$\bullet$]
+    \item \textbf{Estudiante 1:} Implementar \texttt{get\_a\_records}. Consultar registros \textbf{A} y \textbf{AAAA}.
+    \item \textbf{Estudiante 2:} Implementar \texttt{get\_mx\_ns\_records}. Consultar registros \textbf{MX} y \textbf{NS}.
+    \item \textbf{Estudiante 3:} Implementar \texttt{get\_txt\_soa\_records}. Consultar registros \textbf{TXT} y \textbf{SOA}.
+\end{itemize}
+
+\section{Grupo 2: OSINT y Huella Digital (3 Estudiantes)}
+\textbf{Archivo:} \texttt{modulos/osint.py}
+
+\begin{itemize}[label=$\bullet$]
+    \item \textbf{Estudiante 1:} Implementar consulta \textbf{WHOIS} (usando \texttt{python-whois}).
+    \item \textbf{Estudiante 2:} Implementar búsqueda de \textbf{subdominios} mediante Google Dorks.
+    \item \textbf{Estudiante 3:} Implementar detección de \textbf{archivos expuestos} (\texttt{.log}, \texttt{.env}, \texttt{.sql}).
+\end{itemize}
+
+\section{Grupo 3: Descubrimiento de Hosts (3 Estudiantes)}
+\textbf{Archivo:} \texttt{modulos/discovery.py}
+
+\begin{itemize}[label=$\bullet$]
+    \item \textbf{Estudiante 1:} Implementar \textbf{Ping Sweep} básico usando paquetes ICMP.
+    \item \textbf{Estudiante 2:} Crear lógica para procesamiento de \textbf{rangos de red} (CIDR a lista de IPs).
+    \item \textbf{Estudiante 3:} Implementar detección mediante \textbf{TCP SYN Ping} a puertos comunes.
+\end{itemize}
+
+\section{Grupo 4: Escaneo de Puertos y Servicios (4 Estudiantes)}
+\textbf{Archivo:} \texttt{modulos/scanning.py}
+
+\begin{itemize}[label=$\bullet$]
+    \item \textbf{Estudiante 1:} Implementar escáner \textbf{TCP Connect} básico.
+    \item \textbf{Estudiante 2:} Implementar lógica de \textbf{concurrencia} (uso de \texttt{threading} o \texttt{concurrent.futures}).
+    \item \textbf{Estudiante 3:} Implementar escáner \textbf{UDP} y manejo de respuestas ICMP.
+    \item \textbf{Estudiante 4:} Implementar \textbf{Banner Grabbing} inicial para identificación de servicios.
+\end{itemize}
+
+\section{Instrucciones de Entrega}
+\begin{enumerate}
+    \item \textbf{Contrato de Datos:} Toda función debe retornar un diccionario que cumpla con \texttt{docs/schema\_resultados.json}.
+    \item \textbf{No Bloqueo:} El programa principal no debe detenerse por errores en los módulos. Use \texttt{try-except}.
+    \item \textbf{Git:} Trabaje únicamente en el archivo de su grupo. No modifique \texttt{auditoria.py}.
+    \item \textbf{Documentación:} Use Docstrings estilo Google y Type Hinting.
+\end{enumerate}
+
+\vfill
+\centering
+\textit{Recuerde consultar el manual 'Hackers 6' disponible en el repositorio.}
+
+\end{document}
