@@ -2,3 +2,6 @@ dnspython
 python-whois
 jsonschema
 datetime
+requests
+googlesearch-python
+
