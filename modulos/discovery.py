@@ -3,7 +3,25 @@ import datetime
 import ipaddress
 import subprocess
 import platform
-from scapy.all import IP, TCP, sr1, send
+import socket
+
+try:
+    from scapy.all import IP, TCP, sr1, send  # type: ignore
+    HAS_SCAPY = True
+except ImportError:
+    HAS_SCAPY = False
+
+def _resolver_objetivo(target: str) -> str:
+    """Utilidad interna: Resuelve dominios a IP o retorna la IP/CIDR original."""
+    try:
+        # Verifica si ya es una IP o rango válido
+        ipaddress.ip_network(target, strict=False)
+        return target
+    except ValueError:
+        try:
+            return socket.gethostbyname(target)
+        except socket.gaierror:
+            raise ValueError(f"No se pudo resolver el dominio: {target}")
 
 def ping_sweep(target_range: str, timeout: int = 10) -> dict:
     """
@@ -27,7 +45,8 @@ def ping_sweep(target_range: str, timeout: int = 10) -> dict:
         "error_message": None
     }
     try:
-        red = ipaddress.ip_network(target_range, strict=False)
+        objetivo_resuelto = _resolver_objetivo(target_range)
+        red = ipaddress.ip_network(objetivo_resuelto, strict=False)
         sistema = platform.system().lower()
         
         for host in red.hosts():
@@ -71,8 +90,14 @@ def ping_tcp_syn(target_range: str) -> dict:
         'error_message': None
     }
 
+    if not HAS_SCAPY:
+        resultado['status'] = 'error'
+        resultado['error_message'] = "La librería 'scapy' no está instalada. Ejecute: pip install scapy"
+        return resultado
+
     try:
-        red = ipaddress.ip_network(target_range, strict=False)
+        objetivo_resuelto = _resolver_objetivo(target_range)
+        red = ipaddress.ip_network(objetivo_resuelto, strict=False)
         hosts_activos = []
 
         for host in red.hosts():
@@ -109,8 +134,15 @@ def ping_tcp_ack(target_range: str) -> dict:
         "data": {"hosts_activos": []},
         "error_message": None
     }
+
+    if not HAS_SCAPY:
+        resultado['status'] = 'error'
+        resultado['error_message'] = "La librería 'scapy' no está instalada. Ejecute: pip install scapy"
+        return resultado
+
     try:
-        red = ipaddress.ip_network(target_range, strict=False)
+        objetivo_resuelto = _resolver_objetivo(target_range)
+        red = ipaddress.ip_network(objetivo_resuelto, strict=False)
         for host in red.hosts():
             pkt = IP(dst=str(host))/TCP(dport=80, flags="A")
             resp = sr1(pkt, timeout=1, verbose=0)

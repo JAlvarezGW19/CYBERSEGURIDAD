@@ -153,7 +153,9 @@ def main():
     # Grupo para Escaneo
     scan_group = parser.add_argument_group('Escaneo de Puertos')
     scan_group.add_argument("--scan", metavar="PUERTOS", help="Escaneo TCP/UDP (Grupo 4)")
-    scan_group.add_argument("--ping-sweep", action="store_true", help="Descubrimiento de hosts (Grupo 3)")
+    scan_group.add_argument("--ping-sweep", action="store_true", help="Descubrimiento de hosts ICMP (G3-E1)")
+    scan_group.add_argument("--tcp-syn", action="store_true", help="Descubrimiento TCP SYN (G3-E2)")
+    scan_group.add_argument("--tcp-ack", action="store_true", help="Descubrimiento TCP ACK (G3-E3)")
 
     # Grupo Fase II: Enumeración y Ataques
     fase2_group = parser.add_argument_group('Enumeración y Ataques (Fase II)')
@@ -203,6 +205,14 @@ def main():
 
         if args.ping_sweep:
             res = ejecutar_modulo(discovery.ping_sweep, args.target)
+            if res: resultados_totales.append(res)
+            
+        if args.tcp_syn:
+            res = ejecutar_modulo(discovery.ping_tcp_syn, args.target)
+            if res: resultados_totales.append(res)
+            
+        if args.tcp_ack:
+            res = ejecutar_modulo(discovery.ping_tcp_ack, args.target)
             if res: resultados_totales.append(res)
 
         if args.scan:
