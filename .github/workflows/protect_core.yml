@@ -1,0 +1,38 @@
+name: Proteccion de Archivos Core
+
+on:
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  check-protected-files:
+    runs-on: ubuntu-latest
+    permissions:
+      pull-requests: write
+    steps:
+      - name: Checkout del repositorio
+        uses: actions/checkout@v4
+
+      - name: Verificar archivos modificados
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+          AUTHOR: ${{ github.event.pull_request.user.login }}
+        run: |
+          # Permitir bypass si el PR lo hace el profesor (cero97-ctrl)
+          if [ "$AUTHOR" == "cero97-ctrl" ]; then
+            echo "Modificación por el propietario. Bypass exitoso."
+            exit 0
+          fi
+
+          # Obtener lista de archivos modificados
+          CHANGED_FILES=$(gh pr view $PR_NUMBER --json files --jq '.files[].path')
+          
+          for file in $CHANGED_FILES; do
+            if [[ "$file" == "auditoria.py" ]] || [[ "$file" == .gemini/* ]]; then
+              gh pr comment $PR_NUMBER -b "⚠️ **PR Rechazado Automáticamente:** Hola @$AUTHOR, estás intentando modificar \`auditoria.py\` o la carpeta \`.gemini/\`. Según la **Regla de Oro**, esto está estrictamente prohibido. Por favor, revierte los cambios en esos archivos e intenta de nuevo."
+              gh pr close $PR_NUMBER
+              exit 1
+            fi
+          done
