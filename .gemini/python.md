@@ -29,3 +29,8 @@ Este documento contiene problemas frecuentes al ejecutar scripts de Python o al 
      }
      ```
 3. **Recarga de VS Code:** Para forzar a VS Code a revaluar el intérprete y los imports, abre la paleta de comandos (`Ctrl + Shift + P`) y ejecuta **`Developer: Reload Window`** (o **`Python: Restart Language Server`**).
+4. **Falsos Positivos del Linter (Pylance / Pyright):** Dado que Scapy construye muchos de sus módulos dinámicamente en tiempo de ejecución, el análisis estático a veces falla en reconocerlos, arrojando el falso error `Cannot find module 'scapy.all'`, aunque el script funcione perfectamente en la terminal.
+   * **Solución:** Puedes silenciar visualmente este falso positivo indicándole al linter que ignore la línea agregando el comentario `# type: ignore`:
+     ```python
+     from scapy.all import IP, TCP, sr1, send  # type: ignore
+     ```
