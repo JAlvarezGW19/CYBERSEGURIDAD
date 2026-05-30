@@ -42,7 +42,13 @@ def wrapper_banner_grabbing(target):
 
 def wrapper_smb_enumeration(target):
     instancia = smb_enumerator.SMBEnumerator(target)
+    # Cargar diccionarios básicos de prueba para el ataque de fuerza bruta (Estudiante 3)
+    instancia.load_dictionaries(
+        ["administrator", "admin", "guest", "user"],
+        ["", "admin", "password", "123456", "12345"]
+    )
     return instancia.run()
+
 
 def wrapper_ftp_bruteforce(target):
     instancia = bruteforce_ftp.FTPBruteForcer(target)

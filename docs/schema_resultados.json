@@ -1,0 +1,57 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "title": "Resultado de Auditoría - Seguridad Informática",
+    "description": "Contrato de datos para los módulos de la suite de auditoría",
+    "type": "object",
+    "properties": {
+        "modulo": {
+            "type": "string",
+            "description": "Nombre del módulo (ej: DNS, PortScanning, OSINT)"
+        },
+        "grupo": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 4
+        },
+        "estudiante": {
+            "type": "string",
+            "description": "Identificador del estudiante (ej: E1, E2)"
+        },
+        "target": {
+            "type": "string",
+            "description": "El objetivo analizado (IP o Dominio)"
+        },
+        "timestamp": {
+            "type": "string",
+            "format": "date-time",
+            "description": "ISO 8601 de la ejecución"
+        },
+        "status": {
+            "type": "string",
+            "enum": [
+                "success",
+                "error"
+            ]
+        },
+        "data": {
+            "type": "object",
+            "description": "Resultados técnicos específicos obtenidos por la función"
+        },
+        "error_message": {
+            "type": [
+                "string",
+                "null"
+            ],
+            "description": "Detalle del error si status es 'error'"
+        }
+    },
+    "required": [
+        "modulo",
+        "grupo",
+        "estudiante",
+        "target",
+        "timestamp",
+        "status",
+        "data"
+    ]
+}
