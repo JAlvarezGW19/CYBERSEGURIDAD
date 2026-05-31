@@ -2,6 +2,8 @@
 
 Este documento contiene problemas frecuentes al ejecutar scripts de Python o al utilizar librerías de terceros.
 
+**Nota de Entorno:** Todas las configuraciones, comandos y soluciones documentadas en esta base de conocimientos asumen que el sistema operativo utilizado para el desarrollo y las pruebas es **GNU/Linux**.
+
 ## Error de permisos (Operation not permitted) al usar Scapy en Linux
 **El Problema:** Al ejecutar módulos que usan la librería `scapy` (como la inyección TCP SYN/ACK del Grupo 3), el script falla en Linux arrojando un error como `PermissionError: [Errno 1] Operation not permitted` o quejándose sobre sockets de bajo nivel.
 **La Solución:** Scapy requiere forjar paquetes de red a bajo nivel (Raw Sockets). En sistemas operativos Linux/macOS, esta acción requiere permisos de superusuario. Para que estos escaneos funcionen, debes ejecutar el orquestador principal con privilegios elevados anteponiendo la palabra `sudo`. Ejemplo de uso correcto: `sudo python auditoria.py objetivo.com --tcp-syn`.
