@@ -1,0 +1,71 @@
+\documentclass[12pt,a4paper]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[spanish]{babel}
+\usepackage[margin=2cm]{geometry}
+\usepackage{xcolor}
+\usepackage[many]{tcolorbox}
+
+% Definición de paleta de colores para los grupos
+\definecolor{primary}{RGB}{41, 128, 185}
+\definecolor{group1}{RGB}{39, 174, 96}
+\definecolor{group2}{RGB}{142, 68, 173}
+\definecolor{group3}{RGB}{211, 84, 0}
+\definecolor{group4}{RGB}{192, 57, 43}
+
+\title{\vspace{-2cm}\textbf{\Huge \color{primary}Fase II: Enumeración y Ataques}\\\vspace{0.5cm}\large \textbf{Suite de Auditoría de Seguridad - Tareas por Grupo}}
+\author{}
+\date{}
+
+\begin{document}
+\maketitle
+\vspace{-2cm}
+
+\begin{tcolorbox}[colframe=primary, colback=primary!5, arc=2mm, boxrule=1pt]
+\textbf{Objetivo de la Fase:} Transición del reconocimiento pasivo a la interacción activa con los servicios expuestos del objetivo para identificar configuraciones, versiones de software y posibles vulnerabilidades de acceso.
+\end{tcolorbox}
+
+\vspace{0.5cm}
+
+\begin{tcolorbox}[colframe=group1, colback=group1!5, title=\textbf{Grupo 1: Banner Grabbing (\texttt{banner\_grabber.py})}, arc=2mm, fonttitle=\bfseries]
+\textbf{Concepto:} Captura de los anuncios (banners) que los servicios de red muestran al conectarse a ellos. Permite identificar el software y sus versiones específicas.\\
+\textbf{Reto Técnico:} 
+\begin{itemize}
+    \item Uso de \texttt{socket} en Python para conexiones TCP.
+    \item Manejo de tiempos de espera (timeouts) en conexiones fallidas.
+    \item Envío de \textit{payloads} iniciales (ej. \texttt{HEAD / HTTP/1.0}) para servicios que no envían banners automáticamente.
+\end{itemize}
+\end{tcolorbox}
+
+\begin{tcolorbox}[colframe=group2, colback=group2!5, title=\textbf{Grupo 2: Enumeración NetBIOS/SMB (\texttt{smb\_enumerator.py})}, arc=2mm, fonttitle=\bfseries]
+\textbf{Concepto:} Interacción con el protocolo de compartición de archivos de Windows (SMB) para extraer información interna de la red.\\
+\textbf{Reto Técnico:}
+\begin{itemize}
+    \item Establecimiento de \textbf{Sesiones Nulas} (conexiones sin credenciales de usuario).
+    \item Uso de librerías externas especializadas como \texttt{pysmb}.
+    \item Listado de recursos compartidos (Shares) y posibles usuarios.
+\end{itemize}
+\end{tcolorbox}
+
+\begin{tcolorbox}[colframe=group3, colback=group3!5, title=\textbf{Grupo 3: Fuerza Bruta FTP (\texttt{bruteforce\_ftp.py})}, arc=2mm, fonttitle=\bfseries]
+\textbf{Concepto:} Ataque de diccionario contra el servicio de transferencia de archivos probando masivamente combinaciones de usuario/contraseña.\\
+\textbf{Insumo necesario:} Archivos de texto (diccionarios) con listas de usuarios y contraseñas para alimentar el ataque.\\
+\textbf{Reto Técnico:}
+\begin{itemize}
+    \item Implementación de programación concurrente (\textbf{hilos / threading}) para ganar velocidad.
+    \item Uso de colas (\texttt{queue.Queue}) para distribuir las palabras del diccionario.
+    \item Interacción con la librería estándar \texttt{ftplib}.
+\end{itemize}
+\end{tcolorbox}
+
+\begin{tcolorbox}[colframe=group4, colback=group4!5, title=\textbf{Grupo 4: Fuerza Bruta Web (\texttt{bruteforce\_web.py})}, arc=2mm, fonttitle=\bfseries]
+\textbf{Concepto:} Evasión de formularios de autenticación web (ej. login.php) mediante peticiones HTTP repetitivas con credenciales variables.\\
+\textbf{Insumo necesario:} Archivos de texto (diccionarios) con listas de usuarios y contraseñas para generar las combinaciones de acceso.\\
+\textbf{Reto Técnico:}
+\begin{itemize}
+    \item Construcción y envío de peticiones \texttt{POST} con datos dinámicos usando \texttt{requests}.
+    \item Análisis de la respuesta HTML para encontrar indicadores de éxito (ej. "Bienvenido").
+\end{itemize}
+\end{tcolorbox}
+
+\end{document}
