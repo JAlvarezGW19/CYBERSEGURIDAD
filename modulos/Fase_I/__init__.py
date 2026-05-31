@@ -1,0 +1,1 @@
+# Paquete para los módulos de la Fase I (Recopilación y Escaneo)
