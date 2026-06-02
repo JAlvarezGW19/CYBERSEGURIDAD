@@ -10,16 +10,16 @@ Para maximizar la eficiencia y evitar cuellos de botella, el proyecto utiliza un
 Cada grupo tiene su propio archivo de desarrollo en la carpeta `modulos/`.
 
 **Fase I: Recopilación y Escaneo (Semanas 1-4)**
-- **Grupo 1 (DNS):** `modulos/dns_recon.py`
-- **Grupo 2 (OSINT):** `modulos/osint.py`
-- **Grupo 3 (Discovery):** `modulos/discovery.py`
-- **Grupo 4 (Scanning):** `modulos/scanning.py`
+- **Grupo 1 (DNS):** `modulos/Fase_I/dns_recon.py`
+- **Grupo 2 (OSINT):** `modulos/Fase_I/osint.py`
+- **Grupo 3 (Discovery):** `modulos/Fase_I/discovery.py`
+- **Grupo 4 (Scanning):** `modulos/Fase_I/scanning.py`
 
 **Fase II: Enumeración y Ataques (Semanas 5-7)**
-- **Grupo 1 (Banner Grabbing):** `modulos/banner_grabber.py`
-- **Grupo 2 (NetBIOS/SMB):** `modulos/smb_enumerator.py`
-- **Grupo 3 (Fuerza Bruta FTP):** `modulos/bruteforce_ftp.py`
-- **Grupo 4 (Fuerza Bruta Web):** `modulos/bruteforce_web.py`
+- **Grupo 1 (Banner Grabbing):** `modulos/Fase_II/banner_grabber.py`
+- **Grupo 2 (NetBIOS/SMB):** `modulos/Fase_II/smb_enumerator.py`
+- **Grupo 3 (Fuerza Bruta FTP):** `modulos/Fase_II/bruteforce_ftp.py`
+- **Grupo 4 (Fuerza Bruta Web):** `modulos/Fase_II/bruteforce_web.py`
 
 **Fase III: Aplicaciones Web y Reportes (Semanas 8-10)**
 - **Grupo 1 (Web Crawler):** `modulos/web_crawler.py`
@@ -27,7 +27,7 @@ Cada grupo tiene su propio archivo de desarrollo en la carpeta `modulos/`.
 - **Grupo 3 (Escáner SQLi):** `modulos/vuln_sqli.py`
 - **Grupo 4 (Reportes e Integración):** Expansión de `auditoria.py` (Orquestador) y generación de reportes.
 
-**Regla de Oro:** Está estrictamente prohibido modificar los archivos de otros grupos. La modificación de `auditoria.py` está reservada de manera exclusiva al **Prof. César Rodríguez** para las tareas de integración global.
+**Regla de Oro:** Está estrictamente prohibido modificar los archivos de otros grupos. La alteración de `auditoria.py` y cualquier modificación a la carpeta oculta `.gemini/` está reservada de manera exclusiva al **Prof. César Rodríguez**. Cualquier *Pull Request* que altere estos archivos será rechazado.
 
 ### 2. El Contrato de Datos (La Clave del Paralelismo)
 No necesitas esperar a que los grupos de "Reconocimiento" terminen para que tu código de "Escaneo" funcione. La integración no depende del código de otros, sino del **cumplimiento del contrato de salida**.

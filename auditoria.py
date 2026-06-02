@@ -12,28 +12,34 @@ except ImportError:
     HAS_JSONSCHEMA = False
 
 # Validación pre-importación de los archivos de módulos
-modulos_esperados = [
-    "dns_recon.py", "osint.py", "discovery.py", "scanning.py",
-    "banner_grabber.py", "smb_enumerator.py", "bruteforce_ftp.py", "bruteforce_web.py"
-]
-directorio_modulos = os.path.join(os.path.dirname(os.path.abspath(__file__)), "modulos")
+modulos_fase_1 = ["dns_recon.py", "osint.py", "discovery.py", "scanning.py"]
+modulos_fase_2 = ["banner_grabber.py", "smb_enumerator.py", "bruteforce_ftp.py", "bruteforce_web.py"]
 
-for modulo in modulos_esperados:
-    if not os.path.isfile(os.path.join(directorio_modulos, modulo)):
-        print(f"\n[!] ERROR CRÍTICO: Falta el archivo '{modulo}' en la carpeta 'modulos/'.")
+directorio_modulos = os.path.join(os.path.dirname(os.path.abspath(__file__)), "modulos")
+directorio_fase_1 = os.path.join(directorio_modulos, "Fase_I")
+directorio_fase_2 = os.path.join(directorio_modulos, "Fase_II")
+
+for modulo in modulos_fase_1:
+    if not os.path.isfile(os.path.join(directorio_fase_1, modulo)):
+        print(f"\n[!] ERROR CRÍTICO: Falta el archivo '{modulo}' en la carpeta 'modulos/Fase_I/'.")
         print("    Recuerda la 'Regla de Oro': Los scripts de los grupos deben mantener sus")
         print("    nombres originales (dns_recon.py, osint.py, discovery.py, scanning.py).")
         print("    Por favor, verifica que no haya sido renombrado o eliminado.\n")
         sys.exit(1)
 
-from modulos import dns_recon   # Grupo 1
-from modulos import osint       # Grupo 2
-from modulos import discovery   # Grupo 3
-from modulos import scanning    # Grupo 4
-from modulos import banner_grabber  # Grupo 1 (Fase II)
-from modulos import smb_enumerator  # Grupo 2 (Fase II)
-from modulos import bruteforce_ftp  # Grupo 3 (Fase II)
-from modulos import bruteforce_web  # Grupo 4 (Fase II)
+for modulo in modulos_fase_2:
+    if not os.path.isfile(os.path.join(directorio_fase_2, modulo)):
+        print(f"\n[!] ERROR CRÍTICO: Falta el archivo '{modulo}' en la carpeta 'modulos/Fase_II/'.")
+        sys.exit(1)
+
+from modulos.Fase_I import dns_recon   # Grupo 1
+from modulos.Fase_I import osint       # Grupo 2
+from modulos.Fase_I import discovery   # Grupo 3
+from modulos.Fase_I import scanning    # Grupo 4
+from modulos.Fase_II import banner_grabber  # Grupo 1 (Fase II)
+from modulos.Fase_II import smb_enumerator  # Grupo 2 (Fase II)
+from modulos.Fase_II import bruteforce_ftp  # Grupo 3 (Fase II)
+from modulos.Fase_II import bruteforce_web  # Grupo 4 (Fase II)
 
 # --- Funciones adaptadoras para instanciar las clases de la Fase II ---
 def wrapper_banner_grabbing(target):
@@ -153,7 +159,9 @@ def main():
     # Grupo para Escaneo
     scan_group = parser.add_argument_group('Escaneo de Puertos')
     scan_group.add_argument("--scan", metavar="PUERTOS", help="Escaneo TCP/UDP (Grupo 4)")
-    scan_group.add_argument("--ping-sweep", action="store_true", help="Descubrimiento de hosts (Grupo 3)")
+    scan_group.add_argument("--ping-sweep", action="store_true", help="Descubrimiento de hosts ICMP (G3-E1)")
+    scan_group.add_argument("--tcp-syn", action="store_true", help="Descubrimiento TCP SYN (G3-E2)")
+    scan_group.add_argument("--tcp-ack", action="store_true", help="Descubrimiento TCP ACK (G3-E3)")
 
     # Grupo Fase II: Enumeración y Ataques
     fase2_group = parser.add_argument_group('Enumeración y Ataques (Fase II)')
@@ -203,6 +211,14 @@ def main():
 
         if args.ping_sweep:
             res = ejecutar_modulo(discovery.ping_sweep, args.target)
+            if res: resultados_totales.append(res)
+            
+        if args.tcp_syn:
+            res = ejecutar_modulo(discovery.ping_tcp_syn, args.target)
+            if res: resultados_totales.append(res)
+            
+        if args.tcp_ack:
+            res = ejecutar_modulo(discovery.ping_tcp_ack, args.target)
             if res: resultados_totales.append(res)
 
         if args.scan:
