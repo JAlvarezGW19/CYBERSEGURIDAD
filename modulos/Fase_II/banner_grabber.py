@@ -34,7 +34,7 @@ class BannerGrabber:
                     
                     # TODO: Algunos servicios (como HTTP en el puerto 80) necesitan una petición 
                     # para responder. Implementar un condicional para enviar un "HEAD / HTTP/1.0"
-                    if port == 80:
+                    if port in [80, 443]:  # Puertos comunes para HTTP/HTTPS
                         s.sendall(b"HEAD / HTTP/1.0\r\n\r\n")
                         
                     # Leer respuesta y decodificar
@@ -63,7 +63,7 @@ class BannerGrabber:
         return {
             "modulo": "Banner Grabbing",
             "grupo": 1,
-            "estudiante": "Pendiente", # Los estudiantes deben colocar su identificador (ej. E1)
+            "estudiante": "E1", # Los estudiantes deben colocar su identificador (ej. E1)
             "target": self.ip_address,
             "timestamp": datetime.datetime.now().isoformat(),
             "status": "success",
@@ -77,6 +77,6 @@ if __name__ == "__main__":
     # Área de pruebas independiente para el Grupo 1
     import json
     target = "127.0.0.1"
-    grabber = BannerGrabber(target, ports=[21, 22, 80])
+    grabber = BannerGrabber(target, ports =[21, 22, 80, 443])
     resultados = grabber.run()
     print(json.dumps(resultados, indent=4))
