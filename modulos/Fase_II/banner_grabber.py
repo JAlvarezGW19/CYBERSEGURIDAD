@@ -1,4 +1,4 @@
-# Módulo a desarrollar por el Grupo 1 (Fase I: Captura de Anuncios)
+# Módulo a desarrollar por el Grupo 1 (Fase II: Captura de Anuncios)
 import socket
 import re
 import logging
