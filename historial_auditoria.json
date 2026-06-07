@@ -134,5 +134,21 @@
             "credenciales_encontradas": []
         },
         "error_message": "La librer\u00eda pysmb no est\u00e1 instalada. Ejecute: pip install pysmb"
+    },
+    {
+        "modulo": "Enumeracion SMB",
+        "grupo": 2,
+        "estudiante": "E1/E2/E3",
+        "target": "127.0.0.1",
+        "timestamp": "2026-06-07T12:30:24.174794",
+        "status": "success",
+        "data": {
+            "port": 445,
+            "null_session_established": false,
+            "shares": [],
+            "users": [],
+            "credenciales_encontradas": []
+        },
+        "error_message": null
     }
 ]

@@ -265,6 +265,12 @@ class SMBEnumerator:
         """
         print(f"[*] Iniciando enumeración SMB en {self.ip_address}:{self.port}")
 
+        # Cargar diccionarios básicos de prueba si no se han cargado externamente (Estudiante 3)
+        if not self.users_to_test:
+            self.users_to_test = ["administrator", "admin", "guest", "user"]
+        if not self.passwords_to_test:
+            self.passwords_to_test = ["", "admin", "password", "123456", "12345"]
+
         try:
             if self.establish_null_session():
                 print("[+] Sesión nula establecida con éxito.")
