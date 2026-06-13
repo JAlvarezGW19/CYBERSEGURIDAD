@@ -1,0 +1,52 @@
+\documentclass[12pt,a4paper]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[spanish]{babel}
+\usepackage{geometry}
+\usepackage{xcolor}
+\usepackage{enumitem}
+
+\geometry{a4paper, margin=1in}
+
+\title{Reporte de Revisión de Pull Request \\ \large Módulo: Enumeración NetBIOS/SMB (Grupo 2 - Fase II)}
+\author{Prof. César Rodríguez \\ \small Curso: Seguridad Informática}
+\date{\today}
+
+\begin{document}
+
+\maketitle
+
+\section*{Estado de la Integración: \textcolor{teal}{Aprobado (Merge Exitoso)}}
+
+\noindent \textbf{Calificación Final:} \textbf{10/10}
+
+\vspace{0.5cm}
+Estimados estudiantes del Grupo 2:
+
+Se ha revisado satisfactoriamente su \textit{Pull Request} correspondiente a la Fase II (Módulo \texttt{smb\_enumerator.py}). Quiero felicitarlos por el excelente nivel técnico demostrado en esta entrega.
+
+\section*{Aspectos Destacados (Puntos Fuertes)}
+
+\begin{itemize}[label=$\bullet$]
+    \item \textbf{Cumplimiento de la Regla de Oro y Contrato de Datos:} El grupo modificó únicamente su archivo asignado y el diccionario retornado se adapta perfectamente a la estructura requerida en \texttt{schema\_resultados.json}.
+    \item \textbf{Resiliencia y Código Limpio:} El uso de \textit{Type Hinting} de Python es sobresaliente, al igual que los \textit{docstrings} estilo Google. Además, la implementación de bloques \texttt{try-except} asegura que el script no colapse ante caídas de red.
+    \item \textbf{Importación Dinámica (Excelente detalle):} El Estudiante 2 importó la librería \texttt{impacket} de forma local dentro del método \texttt{enumerate\_users\_sid()}. Esta es una práctica profesional brillante que evita que todo el script o el orquestador fallen si el entorno de ejecución no cuenta con dicha librería instalada.
+\end{itemize}
+
+\section*{Oportunidades de Mejora y Correcciones Aplicadas}
+
+Durante la integración con la rama principal, el profesor realizó un par de ajustes menores al código final para garantizar la perfección en el orquestador:
+
+\subsection*{1. Lógica del 'status' en el Contrato de Datos}
+En su código original, el campo \texttt{'status'} del diccionario de retorno estaba programado rígidamente como \texttt{'success'}. Se agregó una pequeña validación condicional al final del método \texttt{run()} para que este estado cambie a \texttt{'error'} en caso de que la librería \texttt{pysmb} no esté instalada, o si tanto la sesión nula como la fuerza bruta fallan completamente.
+
+\subsection*{2. Limpieza de caracteres de escape}
+Al subir el código, algunas firmas de funciones con \textit{Type Hinting} contenían entidades HTML (ej. \texttt{\&gt;} en lugar de \texttt{>}). Esto fue saneado para restaurar la sintaxis nativa de Python.
+
+\vspace{1cm}
+\noindent \textbf{Conclusión:} Han realizado un trabajo fantástico. Su módulo se ha integrado limpiamente a la Suite de Auditoría y servirá como un pilar fundamental para la recolección de credenciales y recursos compartidos.
+
+\vspace{0.5cm}
+\noindent ¡Sigan con este excelente ritmo!
+
+\end{document}

@@ -1,0 +1,51 @@
+\documentclass[12pt,a4paper]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[spanish]{babel}
+\usepackage{geometry}
+\usepackage{xcolor}
+\usepackage{enumitem}
+
+\geometry{a4paper, margin=1in}
+
+\title{Reporte de Revisión de Pull Request \\ \large Módulo: Captura de Anuncios / Banner Grabbing (Grupo 1 - Fase II)}
+\author{Prof. César Rodríguez \\ \small Curso: Seguridad Informática}
+\date{\today}
+
+\begin{document}
+
+\maketitle
+
+\section*{Estado de la Integración: \textcolor{teal}{Aprobado (Merge Exitoso)}}
+
+\noindent \textbf{Calificación Final:} \textbf{10/10}
+
+\vspace{0.5cm}
+Estimados estudiantes del Grupo 1:
+
+Se ha revisado satisfactoriamente su \textit{Pull Request} correspondiente a la Fase II (Módulo \texttt{banner\_grabber.py}). Han realizado un trabajo impecable y me complace informarles que su código ya ha sido integrado a la rama principal de la Suite de Auditoría.
+
+\section*{Aspectos Destacados (Puntos Fuertes)}
+
+\begin{itemize}[label=$\bullet$]
+    \item \textbf{Atención a los Detalles (HTTP/HTTPS):} Tuvieron la excelente visión de considerar que ciertos puertos (como el 80 y el 443) requieren el envío previo de un estímulo (petición \texttt{HEAD}) para que el servidor devuelva el anuncio.
+    \item \textbf{Cumplimiento de la Regla de Oro y Contrato de Datos:} Respetaron perfectamente su entorno de trabajo y orquestaron la salida para que encaje de forma nativa con \texttt{schema\_resultados.json}.
+\end{itemize}
+
+\section*{Oportunidades de Mejora y Valor Agregado}
+
+Durante el proceso de integración, aproveché para agregar un par de mejoras técnicas a su código que elevarán su módulo a un nivel profesional:
+
+\subsection*{1. Envoltura SSL/TLS para el puerto 443}
+Aunque su lógica de enviar un \texttt{HEAD / HTTP/1.0} era correcta en teoría, en la práctica el puerto 443 (HTTPS) fallará si se envía tráfico HTTP en crudo sin antes negociar el cifrado. He integrado la librería \texttt{ssl} nativa de Python para hacer un \textit{wrap} (envoltura) del socket TCP estándar, permitiendo que su módulo capture exitosamente banners de servidores web seguros.
+
+\subsection*{2. Type Hinting}
+Se ha enriquecido la firma de sus métodos y variables con anotaciones de tipos (\texttt{typing}). Esta es una práctica fundamental en el desarrollo moderno con Python que facilita la depuración y lectura del código.
+
+\vspace{1cm}
+\noindent \textbf{Conclusión:} Un progreso enorme respecto a la Fase I. Su módulo es ahora una pieza fundamental y robusta para la enumeración de servicios en nuestra suite.
+
+\vspace{0.5cm}
+\noindent ¡Excelente trabajo, sigan así!
+
+\end{document}

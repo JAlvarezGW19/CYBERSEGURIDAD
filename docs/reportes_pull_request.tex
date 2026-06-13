@@ -46,6 +46,24 @@ Este documento presenta el estado actual de los \textit{Pull Requests} enviados 
     \item \textbf{Grupo 1 - Reconocimiento DNS (\texttt{dns\_recon.py}):} \textcolor{red}{\textbf{Rechazado / En corrección}} (Se solicitó restaurar archivos ajenos y arreglar el esquema de datos).
 \end{itemize}
 
+\section*{Fase II: Enumeración y Ataques}
+
+\subsection*{Grupo 1 - Banner Grabbing (\texttt{banner\_grabber.py})}
+\textbf{Estado:} \textcolor{green!70!black}{\textbf{Aprobado e Integrado}} \\
+\textbf{Calificación:} \textbf{10/10} \\
+Se aplicaron mejoras técnicas por parte del profesor integrando anotaciones de tipo (\textit{Type Hinting}) y una envoltura SSL/TLS para capturar banners en el puerto 443 (HTTPS) exitosamente.
+
+\subsection*{Grupo 2 - Enumeración NetBIOS/SMB (\texttt{smb\_enumerator.py})}
+\textbf{Estado:} \textcolor{green!70!black}{\textbf{Aprobado e Integrado}} \\
+\textbf{Calificación:} \textbf{10/10} \\
+Excelente uso del contrato de datos, manejo de excepciones y código resiliente. Se destaca la importación dinámica de la librería \texttt{impacket} para no romper el entorno de ejecución global.
+
+\subsection*{Grupos Pendientes de Revisión (Fase II)}
+\begin{itemize}[label=$\bullet$]
+    \item \textbf{Grupo 3 - Fuerza Bruta FTP (\texttt{bruteforce\_ftp.py}):} Pendiente de envío de Pull Request.
+    \item \textbf{Grupo 4 - Fuerza Bruta Web (\texttt{bruteforce\_web.py}):} Pendiente de envío de Pull Request.
+\end{itemize}
+
 \vspace{1cm}
 \hrule
 \vspace{0.5cm}

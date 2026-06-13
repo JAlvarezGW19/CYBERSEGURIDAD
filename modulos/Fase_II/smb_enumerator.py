@@ -97,7 +97,6 @@ class SMBEnumerator:
                     
         return self.found_credentials
 
-
     def establish_null_session(self) -> bool:
         """
         Intenta establecer una sesión nula SMB.
@@ -264,7 +263,7 @@ class SMBEnumerator:
             Dict[str, Any]: Resultado siguiendo el contrato de datos del proyecto.
         """
         print(f"[*] Iniciando enumeración SMB en {self.ip_address}:{self.port}")
-
+        
         # Cargar diccionarios básicos de prueba si no se han cargado externamente (Estudiante 3)
         if not self.users_to_test:
             self.users_to_test = ["administrator", "admin", "guest", "user"]
@@ -285,13 +284,20 @@ class SMBEnumerator:
         finally:
             self.close_connection()
 
+        # Evaluación del estado final para el orquestador
+        status_final = "success"
+        if not HAS_PYSMB:
+            status_final = "error"
+        elif not self.null_session_established and not self.found_credentials and self.error_message:
+            status_final = "error"
+
         return {
             "modulo": "Enumeracion SMB",
             "grupo": 2,
             "estudiante": "E1/E2/E3",        
             "target": self.ip_address,
             "timestamp": datetime.datetime.now().isoformat(),
-            "status": "success",
+            "status": status_final,
             "data": {
                 "port": self.port,
                 "null_session_established": self.null_session_established,
@@ -301,7 +307,6 @@ class SMBEnumerator:
             },
             "error_message": self.error_message
         }
-
 
 
 if __name__ == "__main__":
