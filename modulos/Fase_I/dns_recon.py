@@ -1,7 +1,8 @@
 # Grupo 1: Reconocimiento DNS (3 estudiantes)
 import dns.resolver
+import datetime
 from typing import Dict, Any
-from datetime import datetime
+
 
 def get_a_records(domain: str) -> Dict[str, Any]:
     """
@@ -17,11 +18,11 @@ def get_a_records(domain: str) -> Dict[str, Any]:
     print(f"  [G1-E1] Consultando registros A/AAAA para: {domain}")
     
     resultado = {
-        "modulo": "Reconocimiento DNS",
+        "modulo": "DNS",
         "grupo": 1,
         "estudiante": "E1",
         "target": domain,
-        "timestamp": datetime.utcnow().isoformat(),
+        "timestamp": datetime.datetime.now().isoformat(),
         "data": {
             "A": [],
             "AAAA": []
@@ -85,13 +86,27 @@ def get_a_records(domain: str) -> Dict[str, Any]:
 def get_mx_ns_records(domain: str) -> Dict[str, Any]:
     """Estudiante 2: Consulta registros MX y NS"""
     print(f"  [G1-E2] Consultando registros MX/NS para: {domain}")
-    resultado = {"modulo": "Reconocimiento DNS", "grupo": 1, "estudiante": "E2", "target": domain, "timestamp": datetime.utcnow().isoformat(), "data": {"MX": [], "NS": []}, "status": "success", "error_message": None}
+    resultado = {
+        "modulo": "DNS",
+        "grupo": 1, 
+        "estudiante": "E2", 
+        "target": domain, 
+        "timestamp": datetime.datetime.now().isoformat(), 
+        "data": {
+            "MX": [], 
+            "NS": []
+        }, 
+        "status": "success", 
+        "error_message": None
+        }
+    
     try:
         for tipo in ['MX', 'NS']:
             try:
                 resultado["data"][tipo] = [r.to_text() for r in dns.resolver.resolve(domain, tipo)]
             except dns.resolver.NoAnswer:
                 pass
+            
     except Exception as e:
         resultado["status"] = "error"; resultado["error_message"] = str(e)
     return resultado
@@ -99,7 +114,19 @@ def get_mx_ns_records(domain: str) -> Dict[str, Any]:
 def get_txt_soa_records(domain: str) -> Dict[str, Any]:
     """Estudiante 3: Consulta registros TXT y SOA"""
     print(f"  [G1-E3] Consultando registros TXT/SOA para: {domain}")
-    resultado = {"modulo": "Reconocimiento DNS", "grupo": 1, "estudiante": "E3", "target": domain, "timestamp": datetime.utcnow().isoformat(), "data": {"TXT": [], "SOA": []}, "status": "success", "error_message": None}
+    resultado = {
+        "modulo": "DNS",
+        "grupo": 1,
+        "estudiante": "E3",
+        "target": domain,
+        "timestamp": datetime.datetime.now().isoformat(),
+        "data": {
+            "TXT": [], 
+            "SOA": []
+        },
+        "status": "success",
+        "error_message": None
+    }
     try:
         for tipo in ['TXT', 'SOA']:
             try:
@@ -109,3 +136,23 @@ def get_txt_soa_records(domain: str) -> Dict[str, Any]:
     except Exception as e:
         resultado["status"] = "error"; resultado["error_message"] = str(e)
     return resultado
+
+if __name__ == "__main__":
+    import json
+    dominio_prueba = "google.com"
+    print(f"[*] Ejecutando pruebas locales para: {dominio_prueba}\n")
+    
+    #Prueba función A/AAAA
+    resultado_a = get_a_records(dominio_prueba)
+    print("Resultado A/AAAA:")
+    print(json.dumps(resultado_a, indent=4))
+
+    #Prueba función MX/NS
+    resultado_mx_ns = get_mx_ns_records(dominio_prueba)
+    print("\nResultado MX/NS:")
+    print(json.dumps(resultado_mx_ns, indent=4))
+    
+    #Prueba función TXT/SOA
+    resultado_txt_soa = get_txt_soa_records(dominio_prueba)
+    print("\nResultado TXT/SOA:")
+    print(json.dumps(resultado_txt_soa, indent=4))
