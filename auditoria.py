@@ -14,10 +14,12 @@ except ImportError:
 # Validación pre-importación de los archivos de módulos
 modulos_fase_1 = ["dns_recon.py", "osint.py", "discovery.py", "scanning.py"]
 modulos_fase_2 = ["banner_grabber.py", "smb_enumerator.py", "bruteforce_ftp.py", "bruteforce_web.py"]
+modulos_fase_3 = ["web_crawler.py", "vuln_xss_lfi.py", "vuln_sqli.py"]
 
 directorio_modulos = os.path.join(os.path.dirname(os.path.abspath(__file__)), "modulos")
 directorio_fase_1 = os.path.join(directorio_modulos, "Fase_I")
 directorio_fase_2 = os.path.join(directorio_modulos, "Fase_II")
+directorio_fase_3 = os.path.join(directorio_modulos, "Fase_III")
 
 for modulo in modulos_fase_1:
     if not os.path.isfile(os.path.join(directorio_fase_1, modulo)):
@@ -32,6 +34,14 @@ for modulo in modulos_fase_2:
         print(f"\n[!] ERROR CRÍTICO: Falta el archivo '{modulo}' en la carpeta 'modulos/Fase_II/'.")
         sys.exit(1)
 
+for modulo in modulos_fase_3:
+    if not os.path.isfile(os.path.join(directorio_modulos, modulo)):
+        print(f"\n[!] ERROR CRÍTICO: Falta el archivo '{modulo}' en la carpeta 'modulos/'.")
+        sys.exit(1)
+if not os.path.isfile(os.path.join(directorio_fase_3, "reportes.py")):
+    print(f"\n[!] ERROR CRÍTICO: Falta el archivo 'reportes.py' en la carpeta 'modulos/Fase_III/'.")
+    sys.exit(1)
+
 from modulos.Fase_I import dns_recon   # Grupo 1
 from modulos.Fase_I import osint       # Grupo 2
 from modulos.Fase_I import discovery   # Grupo 3
@@ -40,6 +50,10 @@ from modulos.Fase_II import banner_grabber  # Grupo 1 (Fase II)
 from modulos.Fase_II import smb_enumerator  # Grupo 2 (Fase II)
 from modulos.Fase_II import bruteforce_ftp  # Grupo 3 (Fase II)
 from modulos.Fase_II import bruteforce_web  # Grupo 4 (Fase II)
+from modulos import web_crawler          # Grupo 1 (Fase III)
+from modulos import vuln_xss_lfi         # Grupo 4 (Fase III)
+from modulos import vuln_sqli            # Grupo 3 (Fase III)
+from modulos.Fase_III import reportes    # Grupo 2 (Fase III)
 
 # --- Funciones adaptadoras para instanciar las clases de la Fase II ---
 def wrapper_banner_grabbing(target):
@@ -62,6 +76,19 @@ def wrapper_web_bruteforce(target):
     # Plantilla genérica para pruebas de integración
     instancia = bruteforce_web.WebBruteForcer(url, {"username": "", "password": ""}, "Bienvenido")
     instancia.load_dictionaries(["admin"], ["12345", "password"])
+    return instancia.run()
+
+# --- Funciones adaptadoras para instanciar las clases de la Fase III ---
+def wrapper_web_crawler(target):
+    instancia = web_crawler.WebCrawler(target)
+    return instancia.run()
+
+def wrapper_vuln_xss_lfi(target):
+    instancia = vuln_xss_lfi.XSS_LFI_Scanner(target)
+    return instancia.run()
+
+def wrapper_vuln_sqli(target):
+    instancia = vuln_sqli.SQLi_Scanner(target)
     return instancia.run()
 
 def validar_resultado(resultado):
@@ -170,6 +197,13 @@ def main():
     fase2_group.add_argument("--brute-ftp", action="store_true", help="Ataque de fuerza bruta a FTP (Grupo 3)")
     fase2_group.add_argument("--brute-web", action="store_true", help="Ataque de fuerza bruta a Web (Grupo 4)")
 
+    # Grupo Fase III: Aplicaciones Web y Reportes
+    fase3_group = parser.add_argument_group('Aplicaciones Web y Reportes (Fase III)')
+    fase3_group.add_argument("--crawl", action="store_true", help="Rastreo y Mapeo Web (Grupo 1)")
+    fase3_group.add_argument("--report", action="store_true", help="Generar reportes finales HTML/CSV/TXT a partir del historial (Grupo 2)")
+    fase3_group.add_argument("--sqli", action="store_true", help="Escáner de Inyección SQL (Grupo 3)")
+    fase3_group.add_argument("--xss-lfi", action="store_true", help="Escáner XSS y LFI/RFI (Grupo 4)")
+
     args = parser.parse_args()
 
     print("\n" + "="*65)
@@ -239,7 +273,34 @@ def main():
             res = ejecutar_modulo(wrapper_web_bruteforce, args.target)
             if res: resultados_totales.append(res)
 
+        # --- Ejecución Integrada de la Fase III ---
+        if args.crawl:
+            res = ejecutar_modulo(wrapper_web_crawler, args.target)
+            if res: resultados_totales.append(res)
+        if args.xss_lfi:
+            res = ejecutar_modulo(wrapper_vuln_xss_lfi, args.target)
+            if res: resultados_totales.append(res)
+        if args.sqli:
+            res = ejecutar_modulo(wrapper_vuln_sqli, args.target)
+            if res: resultados_totales.append(res)
+
         guardar_historial(resultados_totales)
+
+        # --- Generación de Reportes Finales (Fase III - Grupo 2) ---
+        if args.report:
+            print("\n[*] Iniciando módulo de Generación de Reportes...")
+            historial_completo = []
+            archivo_historial = os.path.join(os.path.dirname(os.path.abspath(__file__)), "historial_auditoria.json")
+            if os.path.isfile(archivo_historial):
+                with open(archivo_historial, "r", encoding="utf-8") as f:
+                    historial_completo = json.load(f)
+            
+            if historial_completo:
+                generador = reportes.GeneradorReportes(historial_completo)
+                res_reporte = ejecutar_modulo(generador.run)
+            else:
+                print("[!] No hay datos en el historial ('historial_auditoria.json') para generar reportes.")
+
     except AttributeError as e:
         print(f"\n[!] Error en la estructura de los módulos: {e}")
 

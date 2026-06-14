@@ -1,0 +1,62 @@
+\documentclass[12pt,letterpaper]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[spanish]{babel}
+\usepackage[margin=2.5cm]{geometry}
+\usepackage{xcolor}
+\usepackage{hyperref}
+
+\begin{document}
+
+\begin{center}
+    \Large \textbf{Curso de Seguridad Informática} \\
+    \large \textbf{Suite de Auditoría en Python} \\
+    \vspace{0.3cm}
+    \normalsize Prof. César Rodríguez \\
+\end{center}
+
+\vspace{0.5cm}
+
+\noindent \textbf{Fecha:} \today \\
+\textbf{Asunto:} Tareas y plazos para la Fase III (Aplicaciones Web y Reportes) \\
+\textbf{Plazo de entrega:} Semanas 8 a 10
+
+\vspace{0.5cm}
+
+\noindent Estimados estudiantes,
+
+\vspace{0.3cm}
+
+Espero que se encuentren muy bien. Tras los excelentes resultados obtenidos en la fase anterior, me dirijo a ustedes para dar inicio formal a la \textbf{Fase III: Aplicaciones Web y Reportes}, la etapa final de nuestro proyecto integrador. 
+
+Durante las \textbf{semanas 8, 9 y 10} de nuestro calendario, nos enfocaremos en el análisis de vulnerabilidades en aplicaciones web y la consolidación de nuestra suite. La asignación de tareas por grupo será la siguiente:
+
+\begin{itemize}
+    \item \textbf{Grupo 1:} Web Crawler, Mapeo y Fuerza Bruta de Directorios (\texttt{web\_crawler.py})
+    \item \textbf{Grupo 2:} Módulo Principal (Orquestador) y Generación de Reportes (\texttt{auditoria.py})
+    \item \textbf{Grupo 3:} Escáner de Vulnerabilidades SQLi (\texttt{vuln\_sqli.py})
+    \item \textbf{Grupo 4:} Escáner de Vulnerabilidades XSS y LFI/RFI (\texttt{vuln\_xss\_lfi.py})
+\end{itemize}
+
+\vspace{0.3cm}
+\noindent \textbf{Instrucciones y Entregables:}
+\begin{enumerate}
+    \item \textbf{Material Teórico:} En esta etapa nos basaremos en los Capítulos 11 y 12 del libro guía. Es fundamental comprender la estructura de las peticiones HTTP y la lógica de las vulnerabilidades antes de codificar.
+    \item \textbf{Contrato de Datos:} Como siempre, los resultados de los escáneres de los grupos 1, 3 y 4 deben ajustarse obligatoriamente al esquema \texttt{schema\_resultados.json}. Esto es vital para que el Grupo 2 pueda unificar la data y generar los reportes HTML/CSV sin errores.
+    \item \textbf{Entrega (Pull Request):} El código finalizado deberá ser enviado mediante un \textbf{Pull Request} en GitHub antes de finalizar la \textbf{Semana 10}.
+\end{enumerate}
+
+\vspace{0.3cm}
+\noindent \textbf{Recordatorios Críticos de Integración:}
+\begin{itemize}
+    \item \textbf{Carpetas:} Todo el desarrollo de módulos (Grupos 1, 3 y 4) debe guardarse en la carpeta \texttt{modulos/}.
+    \item \textbf{Exclusividad del Grupo 2:} El Grupo 2 es el \textbf{único} equipo autorizado para modificar el orquestador principal \texttt{auditoria.py} durante esta etapa.
+\end{itemize}
+
+¡Mucho éxito en esta recta final! Estoy ansioso por ver nuestra Suite de Auditoría completamente funcional e integrada.
+
+\vspace{1cm}
+\noindent Atentamente, \\
+\vspace{0.5cm} \\
+\textbf{Prof. César Rodríguez}
+
+\end{document}

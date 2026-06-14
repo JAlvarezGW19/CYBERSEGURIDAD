@@ -1,0 +1,58 @@
+\documentclass[12pt,letterpaper]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[spanish]{babel}
+\usepackage[margin=2.5cm]{geometry}
+\usepackage{xcolor}
+\usepackage{hyperref}
+\usepackage{enumitem}
+
+\begin{document}
+
+\begin{center}
+    \Large \textbf{Curso de Seguridad Informática} \\
+    \large \textbf{Revisión de Pull Request - Fase II} \\
+    \vspace{0.3cm}
+    \normalsize Prof. César Rodríguez \\
+\end{center}
+
+\vspace{0.5cm}
+
+\noindent \textbf{Grupo:} 3 \\
+\textbf{Módulo:} Fuerza Bruta FTP (\texttt{bruteforce\_ftp.py}) \\
+\textbf{Estado:} \textcolor{red}{\textbf{Requiere Cambios (Refactorizado por el Profesor)}} \\
+\textbf{Calificación Final:} \textbf{5/10}
+
+\vspace{0.5cm}
+
+\noindent Estimados estudiantes del Grupo 3,
+
+\vspace{0.3cm}
+He revisado el código de su Pull Request correspondiente al escáner de Fuerza Bruta FTP. Si bien tienen aspectos de programación muy bien logrados, existen errores críticos de arquitectura y de alcance que rompen la integración con la suite principal. Debido a estas graves faltas a las reglas del proyecto (especialmente la violación del alcance asignado a su grupo), el módulo ha sido penalizado con una calificación definitiva de \textbf{5/10}. A continuación, les detallo mis observaciones:
+
+\subsection*{Aspectos Positivos (\textcolor{green!60!black}{Lo Bueno})}
+\begin{itemize}
+    \item \textbf{Lógica FTP e Hilos:} La implementación usando la librería \texttt{ftplib}, los tiempos de espera (\texttt{timeout}) y el uso de \texttt{threading.Lock()} para evitar condiciones de carrera al imprimir en consola y guardar credenciales es excelente y muy profesional.
+    \item \textbf{Manejo de Errores:} Manejan muy bien las excepciones de red y la limpieza de los sockets garantizando el \texttt{ftp.close()} en el bloque \texttt{finally}.
+\end{itemize}
+
+\subsection*{Errores Críticos (\textcolor{red}{Por qué el PR original no puede integrarse})}
+\begin{enumerate}
+    \item \textbf{Rompieron el Contrato de Integración:} Modificaron el método \texttt{\_\_init\_\_} para exigir \texttt{username} y \texttt{wordlist\_path}. El orquestador \texttt{auditoria.py} espera crear la instancia solo con la IP objetivo (\texttt{FTPBruteForcer(target)}) y luego inyectar los diccionarios en memoria mediante \texttt{load\_dictionaries()}.
+    \item \textbf{Violación del Alcance (Scope):} Programaron ataques SSH y HTTP. El ataque HTTP le corresponde exclusivamente al \textbf{Grupo 4} (\texttt{bruteforce\_web.py}). Además, el análisis de SSH está fuera del alcance de las fases actuales.
+    \item \textbf{Esquema JSON Contaminado:} En el diccionario de retorno copiaron variables propias del Grupo 2 (SMB) como \texttt{null\_session\_established} y \texttt{shares}. Esto provocará que el validador estricto (\texttt{schema\_resultados.json}) rechace su salida, quebrando la integración.
+\end{enumerate}
+
+\subsection*{Solución y Siguientes Pasos}
+Para aprovechar su excelente código de concurrencia y conexión FTP sin comprometer la arquitectura obligatoria, he procedido a refactorizar su código fusionando su lógica dentro de la plantilla base original en \texttt{modulos/Fase\_II/bruteforce\_ftp.py}.
+
+Por favor, revisen el código final en el repositorio para que observen cómo adaptar funcionalidades complejas de red a contratos de datos estrictos orientados a objetos. 
+
+\vspace{0.3cm}
+¡Sigan trabajando con esa misma dedicación y calidad algorítmica para los retos de la Fase III!
+
+\vspace{1cm}
+\noindent Atentamente, \\
+\vspace{0.5cm} \\
+\textbf{Prof. César Rodríguez}
+
+\end{document}

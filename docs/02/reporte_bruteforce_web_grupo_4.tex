@@ -1,0 +1,50 @@
+\documentclass[12pt,letterpaper]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[spanish]{babel}
+\usepackage[margin=2.5cm]{geometry}
+\usepackage{xcolor}
+\usepackage{enumitem}
+
+\begin{document}
+
+\begin{center}
+    \Large \textbf{Curso de Seguridad Informática} \\
+    \large \textbf{Reporte de Evaluación - Fase II} \\
+    \vspace{0.3cm}
+    \normalsize Prof. César Rodríguez \\
+\end{center}
+
+\vspace{0.5cm}
+
+\noindent \textbf{Grupo:} 4 \\
+\textbf{Módulo:} Fuerza Bruta Web (\texttt{bruteforce\_web.py}) \\
+\textbf{Estado:} \textcolor{red}{\textbf{Reprobado por Falta de Entrega}} \\
+\textbf{Calificación Final:} \textbf{0/10}
+
+\vspace{0.5cm}
+
+\noindent Estimados estudiantes del Grupo 4,
+
+\vspace{0.3cm}
+Me dirijo a ustedes para notificarles que, debido a la ausencia total de entrega y falta de reportes de avance correspondientes a la Fase II (Fuerza Bruta Web), su calificación definitiva para este módulo es de \textbf{0/10}. 
+
+Dado que nuestra Suite de Auditoría funciona de manera integral y no podemos depender de módulos faltantes, me he visto en la obligación de programar yo mismo el trabajo que les correspondía para evitar bloquear el progreso de la clase hacia la Fase III.
+
+\subsection*{Trabajo Implementado por el Profesor}
+A continuación, detallo las funcionalidades técnicas que tuve que codificar en su archivo \texttt{bruteforce\_web.py}:
+\begin{itemize}
+    \item \textbf{Peticiones HTTP:} Se implementó el uso de la librería \texttt{requests} para realizar el método \texttt{POST} hacia el formulario objetivo, respetando los tiempos de espera (\texttt{timeout}).
+    \item \textbf{Mapeo de Payloads:} Se codificó la lógica para inyectar dinámicamente los usuarios y contraseñas (provenientes de la cola) en el diccionario \texttt{login\_data\_template}.
+    \item \textbf{Concurrencia Segura:} Se agregó un objeto \texttt{threading.Lock()} para prevenir condiciones de carrera al registrar credenciales válidas y detener la ejecución de los hilos de manera limpia.
+    \item \textbf{Contrato de Datos:} Se ajustó el diccionario de retorno JSON para que su estado (\texttt{status}) refleje debidamente si el ataque fue exitoso o fallido, cumpliendo con \texttt{schema\_resultados.json}.
+\end{itemize}
+
+\vspace{0.3cm}
+\noindent \textbf{Advertencia para la Fase III:} Les recuerdo que para la última etapa se les ha confiado el desarrollo del \textbf{Escáner de Vulnerabilidades XSS y LFI/RFI}. Es imperativo que demuestren compromiso y responsabilidad en esta entrega final si desean tener posibilidades de aprobar la asignatura.
+
+\vspace{1cm}
+\noindent Atentamente, \\
+\vspace{0.5cm} \\
+\textbf{Prof. César Rodríguez}
+
+\end{document}

