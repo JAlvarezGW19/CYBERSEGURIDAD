@@ -1,0 +1,55 @@
+\documentclass[12pt,letterpaper]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[spanish]{babel}
+\usepackage[margin=2.5cm]{geometry}
+\usepackage{xcolor}
+\usepackage{hyperref}
+
+\begin{document}
+
+\begin{center}
+    \Large \textbf{Curso de Seguridad Informática} \\
+    \large \textbf{Aclaratoria Técnica: Arquitectura y Alcance de Módulos} \\
+    \vspace{0.3cm}
+    \normalsize Prof. César Rodríguez \\
+\end{center}
+
+\vspace{0.5cm}
+
+\noindent \textbf{Para:} Reinaldo Caraballo (Grupo 3) \\
+\textbf{Asunto:} Aclaratoria sobre la entrega del módulo de Fuerza Bruta FTP.
+
+\vspace{0.5cm}
+
+\noindent Estimado Reinaldo,
+
+\vspace{0.3cm}
+Me dirijo a ti para aclarar los motivos por los cuales el código que enviaste para el módulo \texttt{bruteforce\_ftp.py} tuvo que ser refactorizado. 
+
+Primero que nada, quiero felicitarte por el excelente manejo que demostraste con la librería \texttt{ftplib} y la programación concurrente utilizando \texttt{threading} y \texttt{queue}. La lógica técnica central para atacar el protocolo FTP estaba muy bien implementada.
+
+Sin embargo, en el desarrollo de software colaborativo, el código debe ajustarse a la arquitectura del sistema completo. Tu entrega presentó errores importantes en este aspecto que impedirían que el orquestador principal (\texttt{auditoria.py}) funcionara:
+
+\subsection*{1. Respeto al Alcance (Scope)}
+Tu equipo (Grupo 3) tenía la responsabilidad exclusiva de desarrollar el ataque por diccionario contra el protocolo \textbf{FTP}. En tu código incluiste funciones para atacar SSH y HTTP. En un proyecto colaborativo, si te asignan el componente 'A', no debes programar el componente 'B', ya que otro equipo (en este caso, el Grupo 4) está trabajando en ello. Hacerlo genera conflictos críticos al momento de integrar el código de toda la clase.
+
+\subsection*{2. Contratos de Integración (\texttt{\_\_init\_\_})}
+Modificaste el método inicializador de la clase para exigir los parámetros \texttt{username} y \texttt{wordlist\_path}. La arquitectura de nuestra suite dictaba que la clase debía instanciarse únicamente con la IP objetivo (\texttt{FTPBruteForcer(target)}), para que luego el orquestador principal se encargara de pasarle las listas de diccionarios en memoria mediante el método \texttt{load\_dictionaries()}. Al cambiar esto, rompiste el puente de comunicación con \texttt{auditoria.py}.
+
+\subsection*{3. Estructura de Retorno (JSON)}
+En el diccionario final de respuesta, incluiste campos que no correspondían a tu módulo (como \texttt{null\_session\_established} o \texttt{shares}, que pertenecen al escáner SMB). Esto provoca que el validador estricto (\texttt{schema\_resultados.json}) rechace tu salida y detenga la ejecución.
+
+\vspace{0.5cm}
+
+\noindent \textbf{Siguientes Pasos:}
+Para que puedas observar cómo se adapta tu excelente lógica FTP a los estándares de arquitectura requeridos, te invito a revisar el archivo \texttt{modulos/Fase\_II/bruteforce\_ftp.py} en el repositorio central del curso. Allí verás tu propio código refactorizado para cumplir estrictamente con los parámetros de inicialización y el contrato de datos.
+
+\vspace{0.5cm}
+¡Espero que esta revisión te sirva como una gran lección de ingeniería de software para afrontar con éxito la Fase III!
+
+\vspace{1cm}
+\noindent Atentamente, \\
+\vspace{0.5cm} \\
+\textbf{Prof. César Rodríguez}
+
+\end{document}
