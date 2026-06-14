@@ -1,0 +1,57 @@
+\documentclass[12pt,a4paper]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[spanish]{babel}
+\usepackage{geometry}
+\usepackage{enumitem}
+\usepackage{xcolor}
+
+\geometry{a4paper, margin=1in}
+
+\title{Comunicado Oficial: Procedimiento de Entrega de Tareas \\ \large Curso: Seguridad Informática}
+\author{Prof. César Rodríguez}
+\date{\today}
+
+\begin{document}
+
+\maketitle
+
+\section*{Aviso Importante sobre la Entrega de Módulos}
+
+Estimados estudiantes,
+
+Me he percatado, a través de mensajes en nuestro grupo de WhatsApp, que varios de ustedes han editado y guardado correctamente los scripts de Python asignados a sus grupos en sus equipos locales, pero \textbf{no están realizando el Pull Request (PR) en GitHub}.
+
+Quiero recordarles que notificar por WhatsApp que han terminado su código \textbf{no constituye una entrega formal} y no permite que sus cambios se integren a la Suite de Auditoría. Guardar el archivo en su computadora no actualiza el repositorio central.
+
+\section*{Procedimiento Obligatorio de Entrega}
+
+Para que su trabajo sea evaluado e integrado al orquestador (\texttt{auditoria.py}), es estrictamente necesario seguir el flujo de control de versiones. Una vez que su código funcione localmente, deben ejecutar en su terminal:
+
+\begin{enumerate}
+    \item \textbf{Añadir los cambios:} \texttt{git add modulos/su\_archivo.py}
+    \item \textbf{Guardar en el historial:} \texttt{git commit -m 'Descripción de los cambios'}
+    \item \textbf{Subir a GitHub:} \texttt{git push origin su\_rama}
+    \item \textbf{Crear el Pull Request:} Ir a GitHub y presionar el botón verde 'Compare \& pull request'.
+\end{enumerate}
+
+Alternativamente, para simplificar el proceso, recuerden que pueden utilizar el script de automatización provisto en la raíz del proyecto:
+\begin{verbatim}
+python3 git_update.py 'Mensaje descriptivo de su trabajo'
+\end{verbatim}
+
+\section*{Consecuencias de no realizar el Pull Request}
+
+\begin{itemize}[label=$\bullet$]
+    \item Si el código no está en un PR, \textbf{no existe} para efectos de calificación.
+    \item Retrasan el trabajo de los demás grupos y la integración de las fases.
+    \item WhatsApp es un canal de comunicación para consultas rápidas, no una plataforma de control de versiones ni de recepción de tareas.
+\end{itemize}
+
+Por favor, revisen el documento \texttt{docs/guia\_pull\_requests.pdf} si tienen dudas con el proceso paso a paso. Quedo atento a la recepción formal de sus trabajos directamente en GitHub.
+
+\vspace{1cm}
+\noindent Atentamente, \\
+\vspace{0.5cm} \\
+\textbf{Prof. César Rodríguez}
+
+\end{document}
