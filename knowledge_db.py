@@ -12,7 +12,7 @@ except ImportError:
 # Inicializar el cliente de ChromaDB (Persistente para guardar en disco)
 DB_PATH = "/home/cero/MEGA/VS_CODE_WORKSPACE/CYBERSEGURIDAD/chroma_db"
 DOCS_PATH = "/home/cero/MEGA/VS_CODE_WORKSPACE/CYBERSEGURIDAD/docs"
-GEMINI_PATH = "/home/cero/MEGA/VS_CODE_WORKSPACE/CYBERSEGURIDAD/.gemini"
+GEMINI_PATH = "/home/cero/MEGA/VS_CODE_WORKSPACE/CYBERSEGURIDAD/.agent"
 client = chromadb.PersistentClient(path=DB_PATH)
 
 def get_collection(topic: str):
@@ -29,7 +29,7 @@ def process_markdown_and_populate(topic: str):
     elif os.path.exists(gemini_file):
         file_path = gemini_file
     else:
-        print(f"Archivo no encontrado en docs/ ni en .gemini/: {topic}.md")
+        print(f"Archivo no encontrado en docs/ ni en .agent/: {topic}.md")
         return
 
     with open(file_path, "r", encoding="utf-8") as f:

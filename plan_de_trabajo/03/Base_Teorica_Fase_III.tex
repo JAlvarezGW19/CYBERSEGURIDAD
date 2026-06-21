@@ -1,0 +1,196 @@
+\documentclass[12pt,letterpaper]{article}
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage[spanish,es-noquoting]{babel}
+\usepackage[margin=2.5cm]{geometry}
+\usepackage[hidelinks]{hyperref}
+\usepackage{enumitem}
+\usepackage{calc}
+\usepackage{xcolor}
+\usepackage{titlesec}
+\usepackage{listings}
+\usepackage{tikz}
+
+\usetikzlibrary{babel}
+\usetikzlibrary{positioning, shadows, arrows.meta, shapes.geometric}
+
+% Color definition for code
+\definecolor{codegreen}{rgb}{0,0.6,0}
+\definecolor{codegray}{rgb}{0.5,0.5,0.5}
+\definecolor{codepurple}{rgb}{0.58,0,0.82}
+\definecolor{backcolour}{rgb}{0.95,0.95,0.92}
+
+\lstdefinestyle{pythonstyle}{
+    backgroundcolor=\color{backcolour},   
+    commentstyle=\color{codegreen},
+    keywordstyle=\color{magenta},
+    numberstyle=\tiny\color{codegray},
+    stringstyle=\color{codepurple},
+    basicstyle=\ttfamily\footnotesize,
+    breakatwhitespace=false,         
+    breaklines=true,                 
+    captionpos=b,                    
+    keepspaces=true,                 
+    numbers=left,                    
+    numbersep=5pt,                  
+    showspaces=false,                
+    showstringspaces=false,
+    showtabs=false,                  
+    tabsize=2
+}
+\lstset{style=pythonstyle}
+
+\title{\textbf{Base Teórica: Fase III}\\ \Large Auditoría de Aplicaciones Web y Generación de Reportes}
+\author{Curso de Seguridad Informática}
+\date{\today}
+
+\begin{document}
+
+\maketitle
+
+\begin{abstract}
+Este documento proporciona la base teórica fundamental para la \textbf{Fase III} del plan de trabajo de la Suite de Auditoría de Seguridad. Se profundiza en los conceptos clave de la capa de aplicación (HTTP), técnicas de rastreo ofensivo (Crawling y Fuzzing), inyección de código (SQL Injection), vulnerabilidades de ejecución del lado del cliente y del lado del servidor (XSS, LFI/RFI) y la metodología de reporte técnico y ejecutivo.
+\end{abstract}
+
+\tableofcontents
+\newpage
+
+\section{Introducción a la Capa de Aplicación y Protocolo HTTP}
+En las fases anteriores, la auditoría se concentró en las capas de red y de transporte (descubrimiento de hosts y escaneo de puertos), así como en la enumeración de servicios y protocolos de infraestructura (SMB, SSH, FTP). La Fase III desplaza el foco hacia la capa de aplicación, específicamente al protocolo HTTP (Hypertext Transfer Protocol).
+
+HTTP es un protocolo sin estado (stateless) basado en un modelo de petición-respuesta. Para comprender y explotar vulnerabilidades web, los auditores deben analizar en detalle la estructura de estos mensajes.
+
+\subsection{Estructura de una Petición HTTP}
+Una petición HTTP estándar consta de tres partes principales:
+\begin{enumerate}
+    \item \textbf{Línea de petición:} Contiene el método HTTP (GET, POST, PUT, DELETE), la URI del recurso solicitado y la versión del protocolo (ej., \texttt{HTTP/1.1}).
+    \item \textbf{Cabeceras (Headers):} Metadatos que describen al cliente, el host solicitado, las cookies de sesión (\texttt{Cookie}), el tipo de contenido aceptado, entre otros.
+    \item \textbf{Cuerpo del mensaje (Body):} Opcional. Contiene los datos enviados al servidor (generalmente en métodos POST o PUT, como datos de formularios o JSON).
+\end{enumerate}
+
+\subsection{Estructura de una Respuesta HTTP}
+La respuesta del servidor incluye:
+\begin{enumerate}
+    \item \textbf{Línea de estado:} Versión del protocolo y código de estado HTTP (ej., \texttt{200 OK}, \texttt{404 Not Found}, \texttt{500 Internal Server Error}).
+    \item \textbf{Cabeceras:} Detalles del servidor web, tipo de contenido (\texttt{Content-Type}), directivas de seguridad (\texttt{Content-Security-Policy}), etc.
+    \item \textbf{Cuerpo del mensaje:} El código HTML, archivos CSS, JS, imágenes o datos en formato JSON/XML.
+\end{enumerate}
+
+\section{Grupo 1: Rastreo y Mapeo Web (Web Crawling \& Fuzzing)}
+El objetivo del primer subgrupo en la Fase III es realizar el reconocimiento activo de la aplicación web, mapeando su superficie de ataque mediante dos técnicas primordiales:
+
+\subsection{Web Crawling (Rastreo Web)}
+Un \textit{crawler} (o araña) es un script automatizado que simula el comportamiento de un usuario navegando por el sitio web. El flujo lógico consiste en:
+\begin{enumerate}
+    \item Realizar una petición inicial a la URL raíz del objetivo.
+    \item Analizar el código HTML de la respuesta (usando librerías como \texttt{BeautifulSoup}) buscando etiquetas de hipervínculos como \texttt{<a href="...">}.
+    \item Normalizar los enlaces relativos a rutas absolutas.
+    \item Visitar de manera recursiva las nuevas URLs descubiertas pertenecientes al mismo dominio, manteniendo un registro de páginas visitadas para evitar bucles infinitos.
+    \item Extraer datos de interés expuestos en el código, tales como comentarios de los desarrolladores (que a menudo contienen credenciales u pistas de diseño), direcciones de correo electrónico, y scripts de JavaScript de terceros.
+\end{enumerate}
+
+\subsection{Web Fuzzing (Descubrimiento de Directorios)}
+No todos los recursos de un servidor web son enlazados públicamente en su HTML. Muchos directorios administrativos o archivos de respaldo se encuentran ``ocultos''. El \textit{fuzzing} web consiste en forzar peticiones HTTP hacia el servidor utilizando una lista predefinida de palabras comunes (diccionario), evaluando el código de respuesta devuelto:
+\begin{itemize}
+    \item Código \textbf{200 OK} o \textbf{403 Forbidden}: Indican la existencia del recurso.
+    \item Código \textbf{404 Not Found}: Indica que el recurso no existe.
+\end{itemize}
+
+\section{Grupo 3: Inyección de Código SQL (SQLi)}
+La Inyección SQL (SQLi) es una de las vulnerabilidades más críticas en aplicaciones web. Ocurre cuando datos provistos por el usuario son concatenados directamente en una consulta a la base de datos sin una sanitización o parametrización previa.
+
+\subsection{Lógica del Ataque}
+Considere un script de backend vulnerable que realiza la siguiente consulta:
+\begin{lstlisting}[language=SQL]
+SELECT * FROM usuarios WHERE username = 'USER_INPUT' AND password = 'PASSWORD_INPUT';
+\end{lstlisting}
+
+Si un atacante introduce en \texttt{USER\_INPUT} el payload \texttt{' OR '1'='1}, la consulta se transforma en:
+\begin{lstlisting}[language=SQL]
+SELECT * FROM usuarios WHERE username = '' OR '1'='1' AND password = 'PASSWORD_INPUT';
+\end{lstlisting}
+
+Dado que la condición \texttt{'1'='1'} siempre es verdadera, el motor de base de datos devolverá los registros de la tabla, saltándose el control de autenticación.
+
+\subsection{Tipos de SQLi}
+\begin{itemize}
+    \item \textbf{In-Band (Basada en errores o Union):} El atacante puede ver los resultados de la inyección o los mensajes de error directamente en la respuesta HTML.
+    \item \textbf{Inferencial (Ciega / Blind):} La aplicación no devuelve datos de la BD ni errores explícitos. El atacante debe inferir la información haciendo preguntas de verdadero/falso al servidor y midiendo el comportamiento de la aplicación (ej., basadas en respuestas booleanas o retrasos de tiempo inducidos).
+\end{itemize}
+
+\section{Grupo 4: Vulnerabilidades del Lado del Cliente y del Servidor (XSS y LFI)}
+Este subgrupo audita dos clases importantes de vulnerabilidades web:
+
+\subsection{Cross-Site Scripting (XSS)}
+XSS ocurre cuando una aplicación web recibe datos de entrada no confiables y los incluye en la página web resultante sin validación o escape adecuados, lo que permite la ejecución de código JavaScript en el navegador del usuario víctima.
+
+\begin{itemize}
+    \item \textbf{XSS Reflejado (Non-Persistent):} El script malicioso se incluye en la petición HTTP (por ejemplo, en un parámetro URL como \texttt{?search=<script>...}) y el servidor lo ``refleja'' inmediatamente en la respuesta.
+    \item \textbf{XSS Almacenado (Persistent):} El payload se almacena de forma permanente en la base de datos del servidor (como un comentario en un foro). Cada vez que cualquier usuario visite esa sección, el script se ejecutará.
+\end{itemize}
+
+\subsection{Inclusión de Archivos Locales (LFI) y Directory Traversal}
+LFI ocurre cuando una aplicación web permite a un usuario controlar qué archivo se cargará o procesará en el servidor. Si el parámetro no está restringido a una lista blanca, el atacante puede emplear la técnica de \textit{Directory Traversal} (uso de caracteres \texttt{../}) para leer archivos internos sensibles del sistema operativo.
+
+Un ejemplo típico de payload LFI para sistemas Unix:
+\begin{lstlisting}
+http://objetivo.local/ver_archivo.php?page=../../../../etc/passwd
+\end{lstlisting}
+
+\section{Grupo 2: Orquestación, Consolidación y Generación de Reportes}
+La última etapa del ciclo de vida de una prueba de penetración o auditoría es la comunicación de hallazgos. El Grupo 2 es responsable de centralizar la ejecución de todos los módulos y formatear los resultados unificados bajo un contrato de datos común.
+
+\subsection{El Contrato de Datos (schema\_resultados.json)}
+Para lograr que la suite sea verdaderamente modular y escalable, las salidas de cada fase de auditoría deben respetar estrictamente un esquema JSON. Esto permite que el motor de reportes consuma los datos de forma consistente sin importar qué herramienta o grupo los generó.
+
+\subsection{Formatos de Reporte}
+\begin{itemize}
+    \item \textbf{CSV (Tabular):} Ideal para el análisis posterior por parte del equipo técnico de administración de sistemas o importación en sistemas SIEM/hojas de cálculo.
+    \item \textbf{HTML (Ejecutivo / Visual):} Ofrece una interfaz de usuario limpia, con gráficos interactivos y tablas ordenadas que permiten a los tomadores de decisiones comprender el estado de seguridad de sus activos de un vistazo.
+\end{itemize}
+
+\section{Diagrama de Flujo del Proceso de Auditoría de la Fase III}
+A continuación se ilustra cómo interactúan los diferentes módulos de la Fase III durante una ejecución integrada en el orquestador principal:
+
+\begin{center}
+\begin{tikzpicture}[
+    node distance=1.5cm and 1.2cm,
+    block/.style={rectangle, draw=blue!70, fill=blue!5, thick, rounded corners, minimum width=4.5cm, minimum height=1cm, align=center, drop shadow},
+    storage/.style={cylinder, draw=teal!70, fill=teal!5, thick, shape border rotate=90, minimum width=2.5cm, minimum height=1.5cm, align=center, drop shadow},
+    arrow/.style={-{Stealth[length=3mm]}, thick, darkgray}
+]
+
+% Nodes
+\node[block] (start) {\textbf{Objetivo URL / IP} \\ (Input Inicial)};
+\node[block, below=of start] (crawler) {\textbf{Grupo 1: Web Crawler} \\ Descubre Enlaces y Parámetros};
+\node[block, below left=1.8cm and 0.5cm of crawler] (sqli) {\textbf{Grupo 3: SQLi Scanner} \\ Inyección en Parámetros};
+\node[block, below right=1.8cm and 0.5cm of crawler] (xsslfi) {\textbf{Grupo 4: XSS \& LFI Scanner} \\ Inyección de Payloads};
+\node[storage, below=4cm of crawler] (json) {\textbf{Contrato de Datos} \\ JSON schema};
+\node[block, below=1cm of json] (g2) {\textbf{Grupo 2: Orquestador} \\ Consolidación};
+\node[block, below=of g2] (reports) {\textbf{Generación de Reportes} \\ HTML / CSV};
+
+% Connections
+\draw[arrow] (start) -- (crawler);
+\draw[arrow] (crawler) -- (sqli);
+\draw[arrow] (crawler) -- (xsslfi);
+\draw[arrow] (sqli) -- (json);
+\draw[arrow] (xsslfi) -- (json);
+\draw[arrow] (json) -- (g2);
+\draw[arrow] (g2) -- (reports);
+
+\end{tikzpicture}
+\end{center}
+
+\section{Consideraciones Éticas y Legales}
+\begin{quote}
+\textit{``Un gran poder conlleva una gran responsabilidad.''}
+\end{quote}
+
+Las herramientas desarrolladas en esta fase simulan ataques cibernéticos reales de nivel de aplicación. Los estudiantes deben recordar que:
+\begin{enumerate}
+    \item Está prohibido ejecutar estas herramientas contra sistemas de terceros sin consentimiento explícito y formal (autorización de pen-testing por escrito).
+    \item Los escáneres automáticos de vulnerabilidades web consumen recursos de red y procesamiento significativos en el backend, pudiendo provocar una Denegación de Servicio (DoS) involuntaria.
+    \item Para fines educativos, todas las pruebas de esta fase deben realizarse sobre laboratorios locales controlados, tales como la máquina virtual \textit{Metasploitable 2} o aplicaciones web deliberadamente vulnerables como \textit{DVWA (Damn Vulnerable Web App)}.
+\end{enumerate}
+
+\end{document}

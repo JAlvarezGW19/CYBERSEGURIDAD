@@ -1,5 +1,5 @@
 # Este archivo define los propietarios del código para revisión obligatoria en GitHub
 
 # Proteger la carpeta de configuración de la IA y el orquestador principal
-/.gemini/ @cero97-ctrl
+/.agent/ @cero97-ctrl
 /auditoria.py @cero97-ctrl

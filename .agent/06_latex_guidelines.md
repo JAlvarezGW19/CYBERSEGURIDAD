@@ -1,7 +1,7 @@
 # Guías y Soluciones para LaTeX
 
 - **Contexto:** El proyecto utiliza LaTeX extensivamente para la documentación (`.tex`).
-- **Errores Comunes:** Se ha creado un registro de errores y soluciones en `.gemini/latex.md`. Consúltalo antes de proponer soluciones a problemas de compilación de LaTeX.
+- **Errores Comunes:** Se ha creado un registro de errores y soluciones en `.agent/latex.md`. Consúltalo antes de proponer soluciones a problemas de compilación de LaTeX.
 - **Puntos Clave a Recordar:**
     - Conflicto `babel` (español) con `tikz`: Usar `\usetikzlibrary{babel}`.
     - Caracteres especiales: Escapar `_`, `%`, `&`, etc., con `\` o usar `\texttt{}`.

@@ -27,7 +27,7 @@ Cada grupo tiene su propio archivo de desarrollo en la carpeta `modulos/`.
 - **Grupo 3 (Escáner SQLi):** `modulos/vuln_sqli.py`
 - **Grupo 4 (Escáner XSS/LFI):** `modulos/vuln_xss_lfi.py`
 
-**Regla de Oro:** Está estrictamente prohibido modificar los archivos de otros grupos. La alteración de `auditoria.py` y cualquier modificación a la carpeta oculta `.gemini/` está reservada de manera exclusiva al **Prof. César Rodríguez**. Cualquier *Pull Request* que altere estos archivos será rechazado.
+**Regla de Oro:** Está estrictamente prohibido modificar los archivos de otros grupos. La alteración de `auditoria.py` y cualquier modificación a la carpeta oculta `.agent/` está reservada de manera exclusiva al **Prof. César Rodríguez**. Cualquier *Pull Request* que altere estos archivos será rechazado.
 
 ### 2. El Contrato de Datos (La Clave del Paralelismo)
 No necesitas esperar a que los grupos de "Reconocimiento" terminen para que tu código de "Escaneo" funcione. La integración no depende del código de otros, sino del **cumplimiento del contrato de salida**.
