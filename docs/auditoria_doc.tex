@@ -1,0 +1,128 @@
+\documentclass[12pt,a4paper]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[spanish]{babel}
+\usepackage{geometry}
+\usepackage{xcolor}
+\usepackage{listings}
+\usepackage{hyperref}
+\usepackage{booktabs}
+
+\geometry{a4paper, margin=1in}
+
+\definecolor{codegreen}{rgb}{0,0.6,0}
+\definecolor{codegray}{rgb}{0.5,0.5,0.5}
+\definecolor{codepurple}{rgb}{0.58,0,0.82}
+\definecolor{backcolour}{rgb}{0.95,0.95,0.92}
+
+\lstdefinestyle{mystyle}{
+    backgroundcolor=\color{backcolour},   
+    commentstyle=\color{codegreen},
+    keywordstyle=\color{magenta},
+    numberstyle=\tiny\color{codegray},
+    stringstyle=\color{codepurple},
+    basicstyle=\ttfamily\small,
+    breakatwhitespace=false,         
+    breaklines=true,                 
+    captionpos=b,                    
+    keepspaces=true,                 
+    numbers=left,                    
+    numbersep=5pt,                  
+    showspaces=false,                
+    showstringspaces=false,
+    showtabs=false,                  
+    tabsize=4,
+    frame=single
+}
+
+\lstset{style=mystyle}
+
+\title{\textbf{Documentación Técnica: Orquestador Central} \\ \large \texttt{auditoria.py}}
+\author{Suite de Auditoría de Seguridad Informática}
+\date{\today}
+
+\begin{document}
+
+\maketitle
+
+\section{Introducción}
+El script \texttt{auditoria.py} es el orquestador principal y punto de entrada por línea de comandos (CLI) de la Suite de Auditoría de Seguridad. Su propósito principal es coordinar, validar y registrar de manera segura la ejecución de diversos módulos independientes de reconocimiento, escaneo, enumeración y ataque, desarrollados por diferentes grupos de trabajo.
+
+\section{Validación Pre-Importación y Estructura}
+Para asegurar que los archivos mantengan los nombres de archivo acordados en las fases del proyecto (la denominada \textit{``Regla de Oro''}), el script realiza una comprobación estricta de la presencia de cada módulo en los directorios correspondientes antes de proceder con sus \texttt{import}:
+
+\begin{itemize}
+    \item \textbf{Fase I (Reconocimiento y Descubrimiento):} \texttt{dns\_recon.py}, \texttt{osint.py}, \texttt{discovery.py}, y \texttt{scanning.py}. Ubicados en \texttt{modulos/Fase\_I/}.
+    \item \textbf{Fase II (Enumeración y Ataques):} \texttt{banner\_grabber.py}, \texttt{smb\_enumerator.py}, \texttt{bruteforce\_ftp.py}, y \texttt{bruteforce\_web.py}. Ubicados en \texttt{modulos/Fase\_II/}.
+    \item \textbf{Fase III (Aplicaciones Web y Reportes):} \texttt{web\_crawler.py}, \texttt{vuln\_xss\_lfi.py}, y \texttt{vuln\_sqli.py} en \texttt{modulos/}, así como \texttt{reportes.py} en \texttt{modulos/Fase\_III/}.
+\end{itemize}
+
+Si algún archivo no es localizado, el script termina la ejecución inmediatamente emitiendo un mensaje de error crítico explicativo.
+
+\section{Funciones Adaptadoras (Wrappers)}
+Dado que las implementaciones de la Fase II y la Fase III utilizan un paradigma orientado a objetos, el orquestador implementa funciones adaptadoras para instanciar las clases y configurar sus diccionarios o parámetros por defecto:
+
+\begin{itemize}
+    \item \texttt{wrapper\_banner\_grabbing(target)}: Instancia la clase \texttt{BannerGrabber}.
+    \item \texttt{wrapper\_smb\_enumeration(target)}: Instancia la clase \texttt{SMBEnumerator}.
+    \item \texttt{wrapper\_ftp\_bruteforce(target)}: Instancia la clase \texttt{FTPBruteForcer} y carga credenciales de prueba por defecto.
+    \item \texttt{wrapper\_web\_bruteforce(target)}: Adapta el objetivo a una URL (por defecto \texttt{login.php}), define los campos de formulario y carga diccionarios.
+    \item \texttt{wrapper\_web\_crawler(target)}: Instancia la clase \texttt{WebCrawler}.
+    \item \texttt{wrapper\_vuln\_xss\_lfi(target)}: Instancia la clase \texttt{XSS\_LFI\_Scanner}.
+    \item \texttt{wrapper\_vuln\_sqli(target)}: Instancia la clase \texttt{SQLi\_Scanner}.
+\end{itemize}
+
+\section{Validación de Contratos y Manejo de Errores}
+El script realiza un control de calidad estricto sobre las respuestas de los módulos:
+
+\subsection{Esquema de Validación (JSON Schema)}
+El orquestador verifica que cada diccionario devuelto cumpla con el esquema oficial definido en \texttt{docs/schema\_resultados.json} a través de la función \texttt{validar\_resultado(resultado)}. Si la librería \texttt{jsonschema} está instalada, valida campos obligatorios tales como:
+\begin{itemize}
+    \item \texttt{modulo}, \texttt{grupo}, \texttt{estudiante}, \texttt{target}, \texttt{timestamp}.
+    \item \texttt{status} (cuyo valor debe ser \texttt{"success"} o \texttt{"error"}).
+    \item \texttt{data} (resultados del módulo).
+    \item \texttt{error\_message} (mensaje de error si el estado falló).
+\end{itemize}
+
+\subsection{Ejecución Segura}
+La función \texttt{ejecutar\_modulo(func, *args, **kwargs)} encapsula la llamada al módulo con bloques \texttt{try-except}. Si el módulo falla o lanza una excepción no controlada, esta es capturada y el orquestador genera un diccionario de error estructurado que contiene el \textit{traceback} detallado en el campo \texttt{error\_message}, evitando que la suite completa falle y permitiendo que se registre la incidencia.
+
+\section{Persistencia de Resultados}
+La función \texttt{guardar\_historial(resultados)} lee el archivo \texttt{historial\_auditoria.json} (si existe y es válido), concatena los nuevos resultados y los persiste nuevamente en formato JSON estructurado.
+
+\section{Uso y Parámetros del CLI}
+El orquestador utiliza la biblioteca \texttt{argparse} para definir las siguientes banderas agrupadas por categoría:
+
+\begin{table}[h!]
+\centering
+\begin{tabular}{@{}llp{8cm}@{}}
+\toprule
+\textbf{Categoría} & \textbf{Bandera} & \textbf{Descripción} \\ \midrule
+\textbf{General} & \texttt{target} & Dominio o dirección IP objetivo. \\ \midrule
+\textbf{Reconocimiento (DNS)} & \texttt{--dns-all} & Ejecuta todas las consultas DNS/WHOIS. \\
+ & \texttt{--dns-a} & Consulta registros A/AAAA (G1-E1). \\
+ & \texttt{--dns-mxns} & Consulta registros MX/NS (G1-E2). \\
+ & \texttt{--dns-txtsoa} & Consulta registros TXT/SOA (G1-E3). \\ \midrule
+\textbf{OSINT} & \texttt{--whois} & Consulta WHOIS del objetivo (G2-E1). \\
+ & \texttt{--dorks} & Subdominios y búsquedas mediante dorks (G2-E2/E3). \\ \midrule
+\textbf{Descubrimiento / Escaneo} & \texttt{--scan PUERTOS} & Escaneo TCP/UDP de puertos (G4). \\
+ & \texttt{--ping-sweep} & Descubrimiento ICMP (G3-E1). \\
+ & \texttt{--tcp-syn} & Descubrimiento TCP SYN (G3-E2). \\
+ & \texttt{--tcp-ack} & Descubrimiento TCP ACK (G3-E3). \\ \midrule
+\textbf{Fase II (Ataques)} & \texttt{--banner} & Captura de banners en puertos comunes (G1). \\
+ & \texttt{--smb} & Enumeración de sesiones nulas SMB (G2). \\
+ & \texttt{--brute-ftp} & Fuerza bruta a servicios FTP (G3). \\
+ & \texttt{--brute-web} & Fuerza bruta a formularios Web (G4). \\ \midrule
+\textbf{Fase III (Web y Reporte)} & \texttt{--crawl} & Rastreo y mapeo de sitios Web (G1). \\
+ & \texttt{--sqli} & Escaneo de inyección SQL (G3). \\
+ & \texttt{--xss-lfi} & Escaneo de vulnerabilidades XSS/LFI (G4). \\
+ & \texttt{--report} & Generación de reporte final HTML/CSV/TXT a partir del historial (G2). \\ \bottomrule
+\end{tabular}
+\caption{Opciones de Línea de Comandos de \texttt{auditoria.py}}
+\label{tab:opciones}
+\end{table}
+
+\section{Compromiso Ético}
+Al iniciar cualquier ejecución, el orquestador imprime una advertencia clara sobre el uso estrictamente académico y ético de la herramienta, haciendo hincapié en que ejecutar ataques sin consentimiento explícito constituye una actividad ilícita.
+
+\end{document}
