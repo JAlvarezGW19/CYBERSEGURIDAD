@@ -98,3 +98,4 @@ python clean_latex.py
 - `auditoria.py` y `.agent/` son responsabilidad exclusiva del profesor (`cero97-ctrl`)
 - Validar con el schema antes de hacer push
 - No hay framework de tests formal; cada módulo se prueba con su bloque `if __name__ == "__main__":`
+- La documentación del proyecto se debe realizar en formato LaTeX
