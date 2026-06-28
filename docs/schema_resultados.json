@@ -1,0 +1,14 @@
+{
+    "type": "object",
+    "properties": {
+        "modulo": {"type": "string"},
+        "grupo": {"type": ["integer", "string"]},
+        "estudiante": {"type": "string"},
+        "target": {"type": "string"},
+        "timestamp": {"type": "string"},
+        "status": {"type": "string"},
+        "error_message": {"type": ["string", "null"]},
+        "data": {"type": "object"}
+    },
+    "required": ["modulo", "estudiante", "target", "status", "data"]
+}
