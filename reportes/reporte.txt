@@ -1,0 +1,13 @@
+==================================================
+         REPORTE DE AUDITORÍA DE SEGURIDAD        
+==================================================
+
+Módulo: VULN_SQLI (Grupo: N/A)
+Auditor: Grupo 3
+Objetivo: http://testphp.vulnweb.com
+Fecha/Hora: N/A
+Estado: SUCCESS
+Datos detallados:
+  - vulnerabilities_sqli: ['Inyección exitosa en el parámetro cat=1']
+--------------------------------------------------
+

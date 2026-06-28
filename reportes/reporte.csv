@@ -1,0 +1,2 @@
+Modulo,Grupo,Estudiante,Target,Timestamp,Status,Datos,Error
+VULN_SQLI,N/A,Grupo 3,http://testphp.vulnweb.com,N/A,success,"{""vulnerabilities_sqli"": [""Inyección exitosa en el parámetro cat=1""]}",
