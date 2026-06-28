@@ -10,7 +10,13 @@ class GeneradorReportes:
     Responsable de recibir el historial de auditoría y exportarlo a formatos legibles 
     (HTML, CSV, TXT) para su presentación final.
     """
-    def __init__(self, resultados: List[Dict[str, Any]], output_dir: str = "reportes"):
+    def __init__(self, resultados: List[Dict[str, Any]], output_dir: str = "reportes") -> None:
+        """Inicializa el generador de reportes.
+
+        Args:
+            resultados (List[Dict[str, Any]]): Historial de resultados de la auditoría.
+            output_dir (str): Directorio donde se guardarán los reportes generados.
+        """
         self.resultados = resultados
         self.output_dir = output_dir
         
@@ -19,9 +25,13 @@ class GeneradorReportes:
             os.makedirs(self.output_dir)
 
     def _generar_html_dinamico(self, data: Any) -> str:
-        """
-        (Estudiante 2) Método auxiliar recursivo para convertir diccionarios 
-        y listas anidadas en tablas HTML dinámicas con Bootstrap.
+        """Método auxiliar recursivo para convertir diccionarios y listas anidadas en tablas HTML.
+
+        Args:
+            data (Any): Estructura de datos a convertir (dict, list o tipo simple).
+
+        Returns:
+            str: Código HTML generado para representar los datos.
         """
         if isinstance(data, dict):
             if not data:
@@ -62,9 +72,10 @@ class GeneradorReportes:
             return str(data)
 
     def generar_html(self) -> str:
-        """
-        (Estudiante 2) Genera un reporte dinámico y estructurado en formato HTML.
-        Retorna la ruta absoluta o relativa del archivo creado.
+        """Genera un reporte dinámico y estructurado en formato HTML.
+
+        Returns:
+            str: Ruta del archivo HTML creado.
         """
         print("[*] (G2-E2) Generando reporte HTML gerencial...")
         html_path = os.path.join(self.output_dir, "reporte_auditoria.html")
@@ -168,9 +179,10 @@ class GeneradorReportes:
         return html_path
 
     def generar_csv_txt(self) -> Tuple[str, str]:
-        """
-        (Estudiante 3) Exporta los datos a formatos tabulares CSV y texto plano TXT.
-        Retorna una tupla con las rutas de los archivos creados (csv_path, txt_path).
+        """Exporta los datos de auditoría a formatos CSV y TXT.
+
+        Returns:
+            Tuple[str, str]: Rutas de los archivos CSV y TXT creados, respectivamente.
         """
         print("[*] (G2-E3) Generando reportes planos (CSV/TXT)...")
         csv_path = os.path.join(self.output_dir, "reporte.csv")
@@ -221,9 +233,10 @@ class GeneradorReportes:
         return csv_path, txt_path
 
     def run(self) -> Dict[str, Any]:
-        """
-        Ejecuta la generación de todos los reportes y retorna un diccionario 
-        con el estado de la operación y las rutas de los archivos generados.
+        """Ejecuta la generación de todos los reportes (HTML, CSV, TXT).
+
+        Returns:
+            Dict[str, Any]: Diccionario que cumple con el contrato de datos.
         """
         rutas_generadas = {}
         
@@ -239,8 +252,10 @@ class GeneradorReportes:
         except Exception as e:
             return {
                 "modulo": "REPORTES",
+                "grupo": 2,
                 "estudiante": "Grupo 2",
                 "target": "Múltiples (Historial)",
+                "timestamp": datetime.datetime.now().isoformat(),
                 "status": "error",
                 "error_message": str(e),
                 "data": {}
@@ -248,9 +263,12 @@ class GeneradorReportes:
 
         return {
             "modulo": "REPORTES",
+            "grupo": 2,
             "estudiante": "Grupo 2",
             "target": "Múltiples (Historial)",
+            "timestamp": datetime.datetime.now().isoformat(),
             "status": "success",
+            "error_message": None,
             "data": rutas_generadas
         }
 

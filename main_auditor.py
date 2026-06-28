@@ -8,6 +8,7 @@ ubicado en modulos/Fase_III/reportes.py.
 """
 
 import argparse
+import datetime
 import json
 import os
 from typing import Any, Dict, List
@@ -80,6 +81,7 @@ def ejecutar_reportes(ruta_historial: str, output_dir: str) -> Dict[str, Any]:
             "grupo": 2,
             "estudiante": "E1",
             "target": ruta_historial,
+            "timestamp": datetime.datetime.now().isoformat(),
             "status": "success",
             "data": {
                 "resultados_procesados": len(resultados),
@@ -94,6 +96,7 @@ def ejecutar_reportes(ruta_historial: str, output_dir: str) -> Dict[str, Any]:
             "grupo": 2,
             "estudiante": "E1",
             "target": ruta_historial,
+            "timestamp": datetime.datetime.now().isoformat(),
             "status": "error",
             "data": {},
             "error_message": str(error)

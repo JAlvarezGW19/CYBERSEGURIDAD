@@ -1,2 +1,10 @@
 Modulo,Grupo,Estudiante,Target,Timestamp,Status,Datos,Error
-VULN_SQLI,N/A,Grupo 3,http://testphp.vulnweb.com,N/A,success,"{""vulnerabilities_sqli"": [""Inyección exitosa en el parámetro cat=1""]}",
+OSINT,2,E2,target.com,2026-04-26T20:10:08.495531,success,"{""dork_utilizado"": ""site:*.target.com -www"", ""total_encontrados"": 0, ""subdominios"": []}",
+OSINT,2,E3,target.com,2026-04-26T20:10:09.065483,success,"{""total_encontrados"": 0, ""archivos_indexados"": [], ""nota"": ""Búsqueda completada o interrumpida por rate-limit de Google.""}",
+Reconocimiento DNS,1,E1,scanme.nmap.org,2026-05-19T16:33:31.013432,success,"{""A"": [""45.33.32.156""], ""AAAA"": [""2600:3c01::f03c:91ff:fe18:bb2f""]}",
+Reconocimiento DNS,1,E2,scanme.nmap.org,2026-05-19T16:33:31.207231,success,"{""MX"": [], ""NS"": []}",
+Reconocimiento DNS,1,E3,scanme.nmap.org,2026-05-19T16:33:31.372224,success,"{""TXT"": [], ""SOA"": []}",
+Scanning,4,E1,scanme.nmap.org,2026-05-19T12:33:31.595623,success,"{""puertos_escaneados"": [22, 80, 443], ""detalles"": [{""puerto"": 22, ""estado"": ""abierto"", ""protocolo"": ""TCP""}, {""puerto"": 80, ""estado"": ""abierto"", ""protocolo"": ""TCP""}, {""puerto"": 443, ""estado"": ""cerrado"", ""protocolo"": ""TCP""}]}",
+Enumeracion SMB,2,E1/E3,127.0.0.1,2026-05-29T20:19:52.498208,success,"{""port"": 445, ""null_session_established"": false, ""shares"": [], ""users"": [], ""credenciales_encontradas"": []}",La librería pysmb no está instalada. Ejecute: pip install pysmb
+Enumeracion SMB,2,E1/E3,127.0.0.1,2026-05-29T20:20:31.271480,success,"{""port"": 445, ""null_session_established"": false, ""shares"": [], ""users"": [], ""credenciales_encontradas"": []}",La librería pysmb no está instalada. Ejecute: pip install pysmb
+Enumeracion SMB,2,E1/E2/E3,127.0.0.1,2026-06-07T12:30:24.174794,success,"{""port"": 445, ""null_session_established"": false, ""shares"": [], ""users"": [], ""credenciales_encontradas"": []}",
